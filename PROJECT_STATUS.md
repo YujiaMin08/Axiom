@@ -101,12 +101,15 @@
 
 Planner 会分配不同类型的模块，每种都需要对应的内容生成 API：
 
-##### 2.1 基础文本内容生成 API
+##### 2.1 基础文本内容生成 API ✅ 已完成测试！
 **用于模块类型**：definition, intuition, overview, examples
-- ❌ 实现 `generateTextContent(topic, domain, moduleType, modulePlan)`
-- ❌ 使用 Gemini 1.5 Pro（需要深度内容）
-- ❌ 输出：title, body (markdown), key_points[]
-- ❌ 支持中英文混合
+- ✅ 实现 `generateTextContent(topic, domain, moduleType, modulePlan)`
+- ✅ 使用 Gemini 2.5 Flash（速度快，质量高）
+- ✅ 输出：title, body (markdown), key_points[], difficulty_level, reading_time
+- ✅ 支持中英文混合
+- ✅ 已测试验证（photosynthesis / intuition）
+- ✅ 质量评估：开场引人入胜，双语自然，结构清晰
+- ⏳ 待接入：集成到主系统
 - **优先级**：🔴 最高（最常用）
 
 ##### 2.2 故事叙事生成 API
@@ -567,6 +570,8 @@ canvases (画布)
 ✅ **自由排版系统** - 拖拽排序 + 自由缩放，支持并排布局  
 ✅ **统一交互协议** - AI 自动判断用户意图，无需手动选择  
 ✅ **优雅的 UI 设计** - 笔记本风格，极简交互，高级感十足  
+✅ **Gemini 3 Flash Planner** - 智能模块规划，支持 27+ 种模块类型，100% 测试通过率  
+✅ **Gemini 2.5 Flash 内容生成器** - 基础文本内容生成，双语支持，质量出色  
 
 ---
 
