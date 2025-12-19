@@ -1,0 +1,46 @@
+{
+  "topic_analysis": {
+    "main_topic": "Red-Black Tree",
+    "complexity_level": "advanced",
+    "key_concepts": [
+      "Binary Search Tree (BST) fundamentals",
+      "Self-balancing properties and invariants",
+      "Tree rotations (left and right)",
+      "Time complexity and logarithmic search speed",
+      "Node coloring rules"
+    ]
+  },
+  "module_plan": [
+    {
+      "type": "intuition",
+      "title": "The Leaning Tower of Data",
+      "description": "An exploration of why 'straight' trees are slow and why we need balance to make searching fast, using the analogy of a balanced mobile vs. a long chain."
+    },
+    {
+      "type": "definition",
+      "title": "The Red-Black Code",
+      "description": "Introduction to the five essential rules of Red-Black trees, focusing on the role of colors and the 'black height' requirement."
+    },
+    {
+      "type": "manipulation",
+      "title": "The Rotation Machine",
+      "description": "An interactive tool where students manually perform left and right rotations on nodes to see how they change the tree's height without breaking BST rules."
+    },
+    {
+      "type": "perspective_mathematics",
+      "title": "The Magic of Logarithms",
+      "description": "A mathematical look at how these balancing rules guarantee a search time of O(log n), comparing the height of a Red-Black tree to a standard BST."
+    },
+    {
+      "type": "experiment",
+      "title": "Build and Balance",
+      "description": "A simulation where students insert numbers into a tree and must resolve 'Red-Red' violations by choosing between recoloring or rotating."
+    },
+    {
+      "type": "challenge",
+      "title": "The Tree Architect",
+      "description": "A final challenge where students must construct a valid Red-Black tree from a sequence of data while maintaining all invariants under pressure."
+    }
+  ],
+  "learning_path_reasoning": "The path begins by establishing the 'why' (intuition) before introducing the technical 'what' (definition). Because Red-Black trees are abstract, the 'manipulation' module is placed early to allow students to feel the mechanics of rotations before they are asked to apply them in the 'experiment' phase. The mathematical perspective provides the formal 'expression' of why this data structure is superior, and the final challenge serves as the 'verification' of their mastery over the complex balancing rules."
+}

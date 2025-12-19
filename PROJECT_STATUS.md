@@ -1,0 +1,527 @@
+# Axiom 项目状态报告
+
+> **最后更新**: 2024-12-19  
+> **项目阶段**: 基础框架完成，等待 AI 集成
+
+---
+
+## 📋 目录
+
+- [已完成功能](#已完成功能)
+- [待实现功能](#待实现功能)
+- [技术架构](#技术架构)
+- [下一步计划](#下一步计划)
+
+---
+
+## ✅ 已完成功能
+
+### 🏗️ 核心架构
+
+#### 1. **数据库设计**
+- ✅ **Canvas 表**: 存储学习空间（id, title, domain, status, created_at）
+- ✅ **Module 表**: 存储模块（id, canvas_id, type, status, order_index, width, height）
+- ✅ **ModuleVersion 表**: 存储模块版本历史（id, module_id, prompt, content_json, created_at）
+- ✅ 外键约束和索引优化
+- ✅ SQLite 数据库持久化
+
+#### 2. **后端 API 系统**
+- ✅ **Express 服务器** (端口 3001)
+- ✅ **统一内容协议** (Content JSON): 支持 text, quiz, video, html_animation, interactive_app
+- ✅ **核心 API 端点**:
+  - `POST /api/canvases` - 创建 Canvas + 生成初始模块
+  - `GET /api/canvases/:id` - 获取 Canvas 详情
+  - `POST /api/modules/:id/edit` - 编辑单个模块（创建新版本）
+  - `POST /api/canvases/:id/expand` - 扩展 Canvas（添加模块）
+  - `POST /api/canvases/:id/new` - 归档旧 Canvas，创建新的
+  - `POST /api/interact` - **统一智能交互接口**（AI 判断意图）
+  - `PUT /api/modules/reorder` - 更新模块顺序
+  - `PUT /api/modules/:id/size` - 更新模块尺寸
+
+#### 3. **Planner 系统** ✅ 已完成升级！
+- ✅ **假 Planner（规则引擎）**: 
+  - generateModulePlan(): 固定模板（已被替代）
+  - generateModuleContent(): 生成假数据（仍在使用）
+  - analyzeIntent(): 简单关键词匹配（仍在使用）
+  
+- ✅ **真正的 Gemini Planner（独立测试完成）**:
+  - generateModulePlanWithGemini(): 使用 Gemini 3 Flash + Medium Thinking
+  - 支持 27+ 种模块类型（包括跨学科视角）
+  - 动态模块数量（3-7 个）
+  - 通过 20 条验证测试（100% 通过率）
+  - 生成创意标题和详细描述
+  - **状态**: ⏳ 已测试验证，等待接入主系统
+
+### 🎨 前端功能
+
+#### 4. **Canvas 页面系统**
+- ✅ **CanvasPage 组件**: 完整的 Canvas 展示页面
+- ✅ **ModuleCard 组件**: 模块卡片，支持多种内容类型渲染
+- ✅ **笔记本风格背景**: 格子纸效果（仅 Canvas 页面）
+- ✅ **笔记手稿式标题**: 左对齐，大标题 + 导语段落
+
+#### 5. **交互功能**
+- ✅ **模块拖拽排序**: 使用 @dnd-kit，支持键盘导航
+- ✅ **模块自由缩放**: 使用 re-resizable，右下角拖拽调整大小
+- ✅ **极简编辑体验**:
+  - 点击标题或左下角铅笔图标进入编辑
+  - 底部输入框展开，支持 Enter 提交、Esc 退出
+  - 局部刷新（只更新该模块）
+- ✅ **统一智能输入框**: 底部悬浮，AI 自动判断是扩展还是新建
+
+#### 6. **UI/UX 优化**
+- ✅ **极简导航栏**: 左上角品牌标志，右上角"Start New Exploration"
+- ✅ **删除冗余功能**: 移除了 SocraticMentor（问号按钮）
+- ✅ **视觉层次优化**: 标题、导语、模块卡片形成清晰的阅读流
+- ✅ **响应式设计**: 支持不同屏幕尺寸
+
+### 🔧 开发工具
+
+#### 7. **开发环境**
+- ✅ **前后端分离**: Vite (前端) + Express (后端)
+- ✅ **热重载**: 前后端都支持自动刷新
+- ✅ **TypeScript**: 端到端类型安全
+- ✅ **API 测试脚本**: `test-api.sh`
+
+---
+
+## ❌ 待实现功能
+
+### 🤖 AI 集成（最高优先级）
+
+#### 1. **真正的 Gemini Planner** ✅ 已完成！
+- ✅ 实现了 `generateModulePlanWithGemini()` 函数
+- ✅ 使用 Gemini 3 Flash + Medium Thinking
+- ✅ 支持跨学科模块类型（27+ 种）
+- ✅ 动态模块数量（3-6 个）
+- ✅ 通过 20 条验证测试（100% 通过率）
+- ⏳ 待接入：替换 `server/planner.ts` 中的假函数
+
+#### 2. **内容生成 API 矩阵**（Planner 的执行层）
+
+Planner 会分配不同类型的模块，每种都需要对应的内容生成 API：
+
+##### 2.1 基础文本内容生成 API
+**用于模块类型**：definition, intuition, overview, examples
+- ❌ 实现 `generateTextContent(topic, domain, moduleType, modulePlan)`
+- ❌ 使用 Gemini 1.5 Pro（需要深度内容）
+- ❌ 输出：title, body (markdown), key_points[]
+- ❌ 支持中英文混合
+- **优先级**：🔴 最高（最常用）
+
+##### 2.2 故事叙事生成 API
+**用于模块类型**：story
+- ❌ 实现 `generateStoryContent(topic, domain, context, characters?)`
+- ❌ 使用 Gemini 1.5 Pro（创意写作）
+- ❌ 输出：narrative_text, key_sentence, illustration_prompts[]
+- ❌ 支持多种叙事风格（科普、寓言、历史）
+- **优先级**：🟡 中等
+
+##### 2.3 交互实验生成 API ⭐
+**用于模块类型**：experiment, manipulation
+- ❌ 实现 `generateExperimentContent(topic, domain, variables)`
+- ❌ 使用 Gemini 3 Flash（结构化生成）
+- ❌ 输出：
+  ```typescript
+  {
+    variables: [{ name, label, min, max, default, unit }],
+    visualization_type: 'chart' | 'animation' | '3d',
+    result_formula: string,
+    explanation: string
+  }
+  ```
+- ❌ 支持可调参数定义
+- **优先级**：🔴 最高（PRD 核心特性）
+
+##### 2.4 数学公式生成 API
+**用于模块类型**：formula, perspective_mathematics
+- ❌ 实现 `generateFormulaContent(topic, concept, derivation_level)`
+- ❌ 使用 Gemini 1.5 Pro
+- ❌ 输出：LaTeX 公式、逐步推导、符号对应表
+- ❌ 支持可折叠的推导步骤
+- **优先级**：🟡 中等
+
+##### 2.5 测验生成 API
+**用于模块类型**：quiz, challenge
+- ❌ 实现 `generateQuizContent(topic, difficulty, question_count)`
+- ❌ 使用 Gemini 3 Flash（快速生成）
+- ❌ 输出：
+  ```typescript
+  {
+    questions: [{
+      question: string,
+      options: string[],
+      answer_index: number,
+      explanation: string,
+      difficulty: 'easy' | 'medium' | 'hard'
+    }]
+  }
+  ```
+- **优先级**：🟢 普通
+
+##### 2.6 跨学科视角生成 API ⭐
+**用于模块类型**：perspective_physics, perspective_chemistry, perspective_biology, etc.
+- ❌ 实现 `generatePerspectiveContent(topic, discipline, other_perspectives?)`
+- ❌ 使用 Gemini 1.5 Pro（需要深度理解）
+- ❌ 输出：学科特定的解释、关键概念、与其他学科的连接
+- ❌ 支持"lens switcher"（视角切换）UI
+- **优先级**：🔴 最高（PRD 独特卖点）
+
+##### 2.7 游戏化内容生成 API
+**用于模块类型**：game
+- ❌ 实现 `generateGameContent(topic, game_type, difficulty)`
+- ❌ 使用 Gemini 3 Flash
+- ❌ 输出：游戏规则、关卡设计、奖励机制
+- ❌ 支持多种游戏类型（匹配、拼图、模拟）
+- **优先级**：🟢 普通
+
+##### 2.8 场景/情境生成 API
+**用于模块类型**：scenario
+- ❌ 实现 `generateScenarioContent(topic, context, user_role)`
+- ❌ 使用 Gemini 1.5 Pro
+- ❌ 输出：场景描述、对话选项、反馈逻辑
+- ❌ 支持语言学习场景和科学应用场景
+- **优先级**：🟡 中等
+
+##### 2.9 对比分析生成 API
+**用于模块类型**：comparison
+- ❌ 实现 `generateComparisonContent(topic, items_to_compare)`
+- ❌ 使用 Gemini 3 Flash
+- ❌ 输出：对比表格、相似点、差异点、关键洞察
+- **优先级**：🟢 普通
+
+##### 2.10 时间线生成 API
+**用于模块类型**：timeline
+- ❌ 实现 `generateTimelineContent(topic, start_date?, end_date?)`
+- ❌ 使用 Gemini 3 Flash
+- ❌ 输出：时间节点数组、事件描述、因果关系
+- **优先级**：🟢 普通
+
+##### 2.11 视频生成 API（第三方集成）
+**用于模块类型**：video
+- ❌ 集成 Runway / Pika / Veo 等视频生成服务
+- ❌ 输入：script, visual_description, duration
+- ❌ 输出：video_url, thumbnail_url, subtitles
+- **优先级**：🟡 中等（后续阶段）
+
+##### 2.12 图像生成 API
+**用于模块类型**：所有类型的配图
+- ❌ 集成 Imagen / DALL-E / Stable Diffusion
+- ❌ 输入：description, style, size
+- ❌ 输出：image_url
+- **优先级**：🟡 中等
+
+#### 3. **智能意图分析**
+- ❌ 替换 `analyzeIntent()` 函数
+- ❌ 使用 Gemini 更准确地判断用户是想扩展还是新建
+- ❌ 从用户输入中提取新主题和领域
+
+---
+
+### 🏗️ 内容生成架构设计
+
+#### Planner → Executor 工作流
+
+```
+用户输入主题
+    ↓
+Gemini Planner (✅ 已完成)
+    ↓
+生成模块计划 [{ type, title, description }]
+    ↓
+分发给对应的 Executor API
+    ↓
+┌─────────────┬─────────────┬─────────────┐
+│   文本 API   │  实验 API   │  视角 API   │ ...
+└─────────────┴─────────────┴─────────────┘
+    ↓
+生成具体内容 (content_json)
+    ↓
+存储到 ModuleVersion 表
+    ↓
+前端渲染
+```
+
+#### API 优先级建议
+
+**Phase 1 - 核心三件套**（MVP）
+1. 🔴 基础文本内容生成 API
+2. 🔴 交互实验生成 API  
+3. 🔴 跨学科视角生成 API
+
+完成这三个，就能支撑 80% 的模块类型。
+
+**Phase 2 - 验证增强**
+4. 🟡 测验生成 API
+5. 🟡 故事生成 API
+6. 🟡 公式推导生成 API
+
+**Phase 3 - 多模态扩展**
+7. 🟢 视频生成 API
+8. 🟢 游戏化内容生成 API
+9. 🟢 图像生成 API
+
+---
+
+### 🎬 内容类型扩展
+
+#### 4. **视频生成**
+- ❌ 集成视频生成 API（如 Runway、Pika 等）
+- ❌ 实现 `VideoContent` 的真实渲染
+- ❌ 视频缩略图和播放控制
+
+#### 5. **HTML 动画**
+- ❌ 实现交互式 HTML 动画组件
+- ❌ 科学实验可视化（如化学反应、物理模拟）
+- ❌ 数据可视化图表
+
+#### 6. **交互式应用**
+- ❌ 实现真正的交互式实验界面
+- ❌ 参数调节和实时反馈
+- ❌ 3D 模型展示（如分子结构、几何体）
+
+### 📚 功能增强
+
+#### 7. **版本历史管理**
+- ❌ 前端 UI 显示模块版本历史
+- ❌ 版本对比功能
+- ❌ 版本回滚功能
+
+#### 8. **Canvas 管理**
+- ❌ Canvas 归档列表查看
+- ❌ 恢复归档的 Canvas
+- ❌ Canvas 搜索和筛选
+
+#### 9. **用户系统**
+- ❌ 用户认证（登录/注册）
+- ❌ 多用户支持
+- ❌ 个人学习历史
+- ❌ 收藏和分享功能
+
+### 🎯 用户体验优化
+
+#### 10. **性能优化**
+- ❌ 模块懒加载
+- ❌ 虚拟滚动（大量模块时）
+- ❌ API 响应缓存
+- ❌ 图片和视频 CDN 优化
+
+#### 11. **可访问性**
+- ❌ 完整的键盘导航支持
+- ❌ 屏幕阅读器支持
+- ❌ 高对比度模式
+- ❌ 多语言界面
+
+#### 12. **移动端适配**
+- ❌ 响应式布局优化
+- ❌ 触摸手势支持（拖拽、缩放）
+- ❌ 移动端专用交互模式
+
+---
+
+## 🎯 当前最紧急的任务：内容生成 API
+
+Planner 已完成，现在最紧急的是实现**内容生成 API**，让 Planner 分配的模块能够真正生成内容。
+
+### 📋 推荐实施顺序
+
+#### 第一周：核心三件套（MVP）
+
+##### 1️⃣ 基础文本内容生成 API
+```typescript
+generateTextContent(
+  topic: string,
+  domain: string, 
+  moduleType: string,
+  moduleDescription: string
+) → { title, body, key_points[] }
+```
+- **覆盖模块类型**: definition, intuition, overview, examples
+- **使用模型**: Gemini 1.5 Pro
+- **输出格式**: Markdown 文本
+- **预计工作量**: 2-3 天
+
+##### 2️⃣ 交互实验生成 API ⭐
+```typescript
+generateExperimentContent(
+  topic: string,
+  experimentDescription: string
+) → {
+  variables: Variable[],
+  visualization_config: any,
+  formula: string,
+  explanation: string
+}
+```
+- **覆盖模块类型**: experiment, manipulation
+- **使用模型**: Gemini 3 Flash（结构化输出）
+- **输出格式**: JSON（变量定义 + 可视化配置）
+- **预计工作量**: 3-4 天
+- **关键挑战**: 定义统一的交互协议
+
+##### 3️⃣ 跨学科视角生成 API ⭐
+```typescript
+generatePerspectiveContent(
+  topic: string,
+  discipline: string,  // physics, chemistry, biology, etc.
+  mainContext: string
+) → {
+  title: string,
+  discipline_explanation: string,
+  key_concepts: string[],
+  connection_to_other_perspectives?: string
+}
+```
+- **覆盖模块类型**: perspective_physics, perspective_chemistry, etc.
+- **使用模型**: Gemini 1.5 Pro
+- **输出格式**: Structured text
+- **预计工作量**: 2-3 天
+- **关键特性**: 展示同一现象的不同学科解释
+
+#### 第二周：验证和叙事
+
+##### 4️⃣ 测验生成 API
+```typescript
+generateQuizContent(
+  topic: string,
+  difficulty: string,
+  moduleContext: string
+) → { questions: Question[] }
+```
+- **覆盖模块类型**: quiz, challenge
+- **使用模型**: Gemini 3 Flash
+- **预计工作量**: 1-2 天
+
+##### 5️⃣ 故事生成 API
+```typescript
+generateStoryContent(
+  topic: string,
+  story_type: string,
+  constraints: any
+) → { narrative_text, illustration_prompts[] }
+```
+- **覆盖模块类型**: story
+- **使用模型**: Gemini 1.5 Pro
+- **预计工作量**: 2-3 天
+
+#### 第三周：辅助功能
+
+##### 6️⃣ 其他模块类型
+- 公式推导 API
+- 对比分析 API
+- 时间线 API
+- 场景 API
+
+---
+
+## 🏛️ 技术架构
+
+### 后端技术栈
+```
+Express 4.18
+├── SQLite (better-sqlite3)
+├── TypeScript
+├── tsx (热重载)
+└── UUID (ID 生成)
+```
+
+### 前端技术栈
+```
+React 19.2
+├── TypeScript
+├── Vite 6.2
+├── @dnd-kit (拖拽)
+├── re-resizable (缩放)
+└── Tailwind CSS (样式)
+```
+
+### 数据库结构
+```
+canvases (画布)
+  └── modules (模块)
+      └── module_versions (版本)
+```
+
+---
+
+## 🚀 下一步计划
+
+### Phase 1: AI 集成（1-2 周）
+1. **接入 Gemini 3 Flash**
+   - 实现真正的 Planner
+   - 实现内容生成
+   - 实现意图分析
+
+2. **测试和优化**
+   - 测试不同领域的生成效果
+   - 优化 prompt 工程
+   - 处理错误和边界情况
+
+### Phase 2: 内容扩展（2-3 周）
+1. **视频生成集成**
+2. **交互式实验组件**
+3. **HTML 动画系统**
+
+### Phase 3: 功能完善（2-3 周）
+1. **版本历史 UI**
+2. **Canvas 管理**
+3. **用户系统**
+
+### Phase 4: 优化和发布（1-2 周）
+1. **性能优化**
+2. **移动端适配**
+3. **文档完善**
+4. **部署上线**
+
+---
+
+## 📊 当前代码统计
+
+- **总文件数**: ~30 个
+- **代码行数**: ~8,000+ 行
+- **API 端点**: 8 个
+- **React 组件**: 7 个
+- **数据库表**: 3 个
+
+---
+
+## 🎯 核心成就
+
+✅ **完整的模块化架构** - Canvas → Module → Version 三层结构  
+✅ **版本控制系统** - 每次编辑创建新版本，不覆盖历史  
+✅ **局部刷新机制** - 编辑模块时只更新该模块，不影响其他  
+✅ **自由排版系统** - 拖拽排序 + 自由缩放，支持并排布局  
+✅ **统一交互协议** - AI 自动判断用户意图，无需手动选择  
+✅ **优雅的 UI 设计** - 笔记本风格，极简交互，高级感十足  
+
+---
+
+## 💡 技术亮点
+
+1. **假数据策略**: 先用 hardcode 跑通流程，后续一次性替换成 AI
+2. **乐观更新**: 拖拽和编辑立即看到结果，不等待服务器
+3. **类型安全**: TypeScript 端到端，API 契约保证
+4. **模块化设计**: 每个功能都是独立模块，易于扩展
+
+---
+
+## 📝 注意事项
+
+⚠️ **当前使用假数据**: 所有内容都带有 `【注：这是假数据】` 标记  
+⚠️ **数据库文件**: `data/axiom.db` 已添加到 `.gitignore`，不会提交到 Git  
+⚠️ **环境变量**: 需要配置 `GEMINI_API_KEY`（目前未使用）  
+⚠️ **端口配置**: 前端 5173，后端 3001  
+
+---
+
+## 🔗 相关文档
+
+- **快速启动**: 查看 `README.md`（如果存在）
+- **API 文档**: 查看 `server/index.ts` 中的注释
+- **数据库结构**: 查看 `server/db.ts`
+
+---
+
+**项目状态**: 🟢 基础框架完成，等待 AI 集成  
+**下一步**: 接入 Gemini 3 Flash，实现真正的智能生成
+

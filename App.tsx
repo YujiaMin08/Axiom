@@ -54,7 +54,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen relative selection:bg-stone-900 selection:text-stone-100">
       <DynamicBackground category={category} />
-
+      
       {/* 全局导航栏 - 统一且极简 */}
       <nav className="fixed top-0 left-0 right-0 z-50 px-12 py-8 flex justify-between items-center">
         <div 
@@ -75,7 +75,7 @@ const App: React.FC = () => {
             </button>
           </div>
         )}
-      </nav>
+        </nav>
 
       <main className="pt-24 min-h-screen z-10 relative">
         {canvasMode && canvasId ? (
@@ -158,12 +158,12 @@ const App: React.FC = () => {
           /* Active Session State */
           <div className="animate-in fade-in duration-1000">
             <div className="flex flex-col items-center mb-12 space-y-4">
-               <button 
-                onClick={reset}
-                className="text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors border-b border-stone-200 py-1"
-               >
-                 ← New Exploration
-               </button>
+                 <button 
+                  onClick={reset}
+                  className="text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors border-b border-stone-200 py-1"
+                 >
+                   ← New Exploration
+                 </button>
             </div>
 
             {category === LearningCategory.LANGUAGE && <LanguageModule data={content} />}
