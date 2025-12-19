@@ -1,0 +1,7 @@
+{
+  "name": "axiom - Where Understanding Takes Form",
+  "description": "A premium GenUI educational platform inspired by European classical rationalism, transforming abstract concepts into interactive learning spaces.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
