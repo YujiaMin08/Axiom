@@ -4,7 +4,8 @@ import { LearningCategory } from './types';
 import DynamicBackground from './components/DynamicBackground';
 import LanguageModule from './components/LanguageModule';
 import ScienceModule from './components/ScienceModule';
-import SocraticMentor from './components/SocraticMentor';
+import CanvasPage from './components/CanvasPage';
+import { createCanvas } from './apiService';
 
 const App: React.FC = () => {
   const [topic, setTopic] = useState('');
@@ -12,7 +13,10 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [content, setContent] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isDialogueOpen, setIsDialogueOpen] = useState(false);
+  
+  // Canvas 模式状态
+  const [canvasMode, setCanvasMode] = useState(false);
+  const [canvasId, setCanvasId] = useState<string | null>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,8 +25,17 @@ const App: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await generateEducationalContent(topic, category);
-      setContent(result);
+      // 使用 Canvas 模式
+      const domainMap: Record<LearningCategory, string> = {
+        [LearningCategory.LANGUAGE]: 'LANGUAGE',
+        [LearningCategory.SCIENCE]: 'SCIENCE',
+        [LearningCategory.LIBERAL_ARTS]: 'LIBERAL_ARTS',
+        [LearningCategory.DIALOGUE]: 'LIBERAL_ARTS'
+      };
+      
+      const canvasData = await createCanvas(topic, domainMap[category]);
+      setCanvasId(canvasData.canvas.id);
+      setCanvasMode(true);
     } catch (err) {
       console.error(err);
       setError("The Oracle encountered an error in deduction. Please try another query.");
@@ -34,32 +47,45 @@ const App: React.FC = () => {
   const reset = () => {
     setContent(null);
     setTopic('');
-    setIsDialogueOpen(false);
+    setCanvasMode(false);
+    setCanvasId(null);
   };
 
   return (
     <div className="min-h-screen relative selection:bg-stone-900 selection:text-stone-100">
       <DynamicBackground category={category} />
-      
-      {/* Dialogue Mode Modal */}
-      {isDialogueOpen && (
-        <SocraticMentor 
-          topic={content?.word || content?.concept || content?.title || topic} 
-          onClose={() => setIsDialogueOpen(false)} 
-        />
-      )}
 
-      {/* Navigation Header - Only visible on Landing Page, continuously blends in */}
-      {!content && (
-        <nav className="fixed top-0 left-0 right-0 z-40 px-12 py-6 flex justify-between items-center">
-          <div className="cursor-pointer" onClick={reset}>
-            <span className="text-3xl font-bold tracking-tighter playfair">axiom</span>
+      {/* 全局导航栏 - 统一且极简 */}
+      <nav className="fixed top-0 left-0 right-0 z-50 px-12 py-8 flex justify-between items-center">
+        <div 
+          className="cursor-pointer group" 
+          onClick={reset}
+        >
+          <span className="text-3xl font-bold tracking-tighter playfair text-stone-900/80 group-hover:text-stone-900 transition-colors">axiom</span>
+        </div>
+
+        {/* 只有在 Canvas 模式下才显示的辅助操作 */}
+        {canvasMode && (
+          <div className="animate-in fade-in slide-in-from-right-2 duration-500">
+            <button 
+              onClick={reset}
+              className="text-[10px] uppercase tracking-[0.2em] text-stone-400 hover:text-stone-900 transition-colors py-2 px-4 border border-transparent hover:border-stone-200 rounded-full"
+            >
+              ← Start New Exploration
+            </button>
           </div>
-        </nav>
-      )}
+        )}
+      </nav>
 
       <main className="pt-24 min-h-screen z-10 relative">
-        {!content ? (
+        {canvasMode && canvasId ? (
+          /* Canvas Mode */
+          <CanvasPage 
+            canvasId={canvasId} 
+            onReset={reset} 
+            onCanvasChange={setCanvasId}
+          />
+        ) : !content ? (
           /* Landing State */
           <div className="flex flex-col items-center justify-center min-h-[80vh] px-6 text-center">
             <div className="max-w-3xl space-y-12 w-full">
@@ -132,20 +158,12 @@ const App: React.FC = () => {
           /* Active Session State */
           <div className="animate-in fade-in duration-1000">
             <div className="flex flex-col items-center mb-12 space-y-4">
-               <div className="flex space-x-8">
-                 <button 
-                  onClick={reset}
-                  className="text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors border-b border-stone-200 py-1"
-                 >
-                   ← New Exploration
-                 </button>
-                 <button 
-                  onClick={() => setIsDialogueOpen(true)}
-                  className="text-[10px] uppercase tracking-widest text-stone-900 font-bold border-b-2 border-stone-900 py-1 animate-pulse"
-                 >
-                   Consult the Oracle →
-                 </button>
-               </div>
+               <button 
+                onClick={reset}
+                className="text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors border-b border-stone-200 py-1"
+               >
+                 ← New Exploration
+               </button>
             </div>
 
             {category === LearningCategory.LANGUAGE && <LanguageModule data={content} />}
@@ -171,18 +189,6 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {/* Floating Action Button */}
-      <div className="fixed bottom-8 right-8 z-50">
-        <button 
-          onClick={() => content && setIsDialogueOpen(true)}
-          className="w-12 h-12 rounded-full border border-stone-900 flex items-center justify-center bg-[#FDFCF5] hover:bg-stone-900 hover:text-white transition-all duration-500 shadow-xl hover:rotate-90 group"
-        >
-          <span className="playfair text-xl group-hover:hidden">?</span>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 hidden group-hover:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-          </svg>
-        </button>
-      </div>
     </div>
   );
 };
