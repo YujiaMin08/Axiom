@@ -1,0 +1,76 @@
+{
+  "output": {
+    "formula_description": "速率由光照强度和CO2浓度的米氏方程乘积决定，并受温度酶活性曲线（高斯分布）调制。",
+    "name": "氧气产生速率",
+    "unit": "mL/min"
+  },
+  "parameters": [
+    {
+      "default": 50,
+      "description": "影响光反应阶段的能量供应",
+      "max": 100,
+      "min": 0,
+      "name": "光照强度",
+      "unit": "%"
+    },
+    {
+      "default": 400,
+      "description": "影响暗反应阶段的碳固定速率",
+      "max": 2000,
+      "min": 0,
+      "name": "二氧化碳浓度",
+      "unit": "ppm"
+    },
+    {
+      "default": 25,
+      "description": "影响光合作用相关酶的催化活性",
+      "max": 50,
+      "min": 0,
+      "name": "环境温度",
+      "unit": "°C"
+    }
+  ],
+  "quiz_questions": [
+    {
+      "answer_index": 1,
+      "options": [
+        "光照强度过大",
+        "酶的高温变性",
+        "水分蒸发过快",
+        "二氧化碳浓度过高"
+      ],
+      "question": "当温度超过45°C时，光合速率显著下降的主要原因是什么？"
+    },
+    {
+      "answer_index": 2,
+      "options": [
+        "氧气浓度",
+        "光照强度",
+        "二氧化碳浓度或温度",
+        "水含量"
+      ],
+      "question": "在光照极强的情况下，氧气产生速率不再上升，此时的限制因素通常是？"
+    },
+    {
+      "answer_index": 1,
+      "options": [
+        "二氧化碳",
+        "氧气",
+        "氢气",
+        "氮气"
+      ],
+      "question": "实验中观察到的气泡主要成分是什么？"
+    },
+    {
+      "answer_index": 2,
+      "options": [
+        "增加",
+        "保持不变",
+        "减少至零",
+        "变为负值"
+      ],
+      "question": "若将光源完全关闭，氧气的产生速率将如何变化？"
+    }
+  ],
+  "visualization_type": "bubbles"
+}

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inertia Lab: The Frictionless Ice Rink</title>
+    <style>
+        :root {
+            --bg: #FDFCF5;
+            --card: #ffffff;
+            --primary: #2563eb;
+            --success: #10b981;
+            --accent: #f59e0b;
+            --text: #1e293b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: var(--card);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border);
+        }
+
+        header { text-align: center; margin-bottom: 24px; }
+        h1 { margin: 0; font-size: 1.5rem; color: var(--primary); }
+        p { color: #64748b; margin: 4px 0; }
+
+        /* Simulation Canvas Area */
+        #track-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: #f8fafc;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            cursor: crosshair;
+        }
+
+        .marker {
+            position: absolute;
+            bottom: 0;
+            height: 10px;
+            border-left: 1px solid #cbd5e1;
+            font-size: 10px;
+            color: #94a3b8;
+            padding-left: 2px;
+        }
+
+        #puck {
+            position: absolute;
+            top: 50%;
+            left: 50px;
+            width: 40px;
+            height: 40px;
+            background: #334155;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        #velocity-arrow {
+            position: absolute;
+            top: 50%;
+            left: 40px;
+            height: 4px;
+            background: var(--success);
+            transform-origin: left center;
+            pointer-events: none;
+            display: none;
+        }
+
+        #velocity-arrow::after {
+            content: '';
+            position: absolute;
+            right: -8px;
+            top: -6px;
+            border-left: 10px solid var(--success);
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+        }
+
+        #prediction-flag {
+            position: absolute;
+            top: 30%;
+            width: 2px;
+            height: 40px;
+            background: var(--accent);
+            display: none;
+        }
+
+        #prediction-flag::before {
+            content: '🚩';
+            position: absolute;
+            top: -20px;
+            left: -8px;
+        }
+
+        /* Controls */
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background: #f1f5f9;
+            border-radius: 12px;
+        }
+
+        .control-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-weight: 600; font-size: 0.9rem; }
+
+        input[type="range"] { width: 100%; cursor: pointer; }
+
+        .btn-group { display: flex; gap: 8px; }
+        button {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        button.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        #kick-btn {
+            background: var(--primary);
+            color: white;
+            font-size: 1.1rem;
+            padding: 15px;
+            margin-top: 20px;
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            display: none;
+        }
+
+        #kick-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+        /* HUD & Feedback */
+        #data-overlay {
+            display: flex;
+            justify-content: space-around;
+            background: #1e293b;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-family: monospace;
+        }
+
+        #explanation-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+            background: #eff6ff;
+            min-height: 60px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .never-stop-predict {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>The Frictionless Ice Rink</h1>
+        <p>Newton's First Law: Inertia</p>
+    </header>
+
+    <div id="data-overlay">
+        <span>Speed: <span id="val-speed">0.0</span> m/s</span>
+        <span>Friction: <span id="val-force">0.0</span> N</span>
+    </div>
+
+    <div id="track-container">
+        <!-- Distance Markers -->
+        <script>
+            for(let i=0; i<=2000; i+=100) {
+                document.write(`<div class="marker" style="left: ${i}px">${i/100}m</div>`);
+            }
+        </script>
+        <div id="prediction-flag"></div>
+        <div id="puck"></div>
+        <div id="velocity-arrow"></div>
+    </div>
+
+    <div id="explanation-box">
+        <strong>Phase 1: Adjust & Predict.</strong> Choose your surface and puck mass, then click on the track to predict where the puck will stop.
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <label>Surface Type</label>
+            <select id="surface-select" onchange="updateParams()">
+                <option value="0.5">Sand (High Friction)</option>
+                <option value="0.2">Grass (Medium Friction)</option>
+                <option value="0.02">Ice (Low Friction)</option>
+                <option value="0">Deep Space (No Friction)</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label>Kick Strength: <span id="kick-val">5</span> m/s</label>
+            <input type="range" id="kick-slider" min="1" max="10" value="5" oninput="updateParams()">
+        </div>
+
+        <div class="control-group">
+            <label>Puck Mass</label>
+            <div class="btn-group">
+                <button id="mass-light" class="active" onclick="setMass(1)">Light (1kg)</button>
+                <button id="mass-heavy" onclick="setMass(5)">Heavy (5kg)</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="space-prediction" class="never-stop-predict" style="display:none;">
+        <input type="checkbox" id="never-stop-check" onchange="checkPredictReady()">
+        <label for="never-stop-check">I predict it will never stop.</label>
+    </div>
+
+    <button id="kick-btn" onclick="startSim()">KICK PUCK</button>
+    <button id="reset-btn" onclick="resetSim()" style="margin-top:10px; width:100%; border:none; color:#64748b;">Reset Simulation</button>
+</div>
+
+<script>
+    // State
+    let state = 'PREDICT'; // PREDICT, ANIMATING, STOPPED
+    let posX = 50;
+    let velocity = 0;
+    let mass = 1;
+    let mu = 0.5;
+    let initialV = 5;
+    let predictionX = null;
+    let animationId = null;
+
+    const puck = document.getElementById('puck');
+    const arrow = document.getElementById('velocity-arrow');
+    const flag = document.getElementById('prediction-flag');
+    const kickBtn = document.getElementById('kick-btn');
+    const track = document.getElementById('track-container');
+    const explanation = document.getElementById('explanation-box');
+
+    // Initialize
+    function updateParams() {
+        if (state !== 'PREDICT') return;
+        mu = parseFloat(document.getElementById('surface-select').value);
+        initialV = parseInt(document.getElementById('kick-slider').value);
+        document.getElementById('kick-val').innerText = initialV;
+        
+        const spacePredict = document.getElementById('space-prediction');
+        if (mu === 0) {
+            spacePredict.style.display = 'flex';
+            flag.style.display = 'none';
+            predictionX = null;
+        } else {
+            spacePredict.style.display = 'none';
+        }
+        checkPredictReady();
+    }
+
+    function setMass(m) {
+        if (state !== 'PREDICT') return;
+        mass = m;
+        document.getElementById('mass-light').classList.toggle('active', m === 1);
+        document.getElementById('mass-heavy').classList.toggle('active', m === 5);
+        explanation.innerHTML = `A <strong>${m}kg</strong> puck has ${m > 1 ? 'more' : 'less'} inertia, meaning it's ${m > 1 ? 'harder' : 'easier'} to change its motion.`;
+    }
+
+    // Prediction Logic
+    track.addEventListener('click', (e) => {
+        if (state !== 'PREDICT' || mu === 0) return;
+        const rect = track.getBoundingClientRect();
+        predictionX = e.clientX - rect.left;
+        flag.style.left = predictionX + 'px';
+        flag.style.display = 'block';
+        checkPredictReady();
+    });
+
+    function checkPredictReady() {
+        const neverStop = document.getElementById('never-stop-check').checked;
+        if ((mu > 0 && predictionX !== null) || (mu === 0 && neverStop)) {
+            kickBtn.style.display = 'block';
+        } else {
+            kickBtn.style.display = 'none';
+        }
+    }
+
+    // Simulation Loop
+    function startSim() {
+        state = 'ANIMATING';
+        velocity = initialV;
+        kickBtn.disabled = true;
+        arrow.style.display = 'block';
+        
+        const frictionForce = mu * mass * 9.8;
+        const deceleration = frictionForce / mass;
+
+        function step() {
+            // Physics logic: v = v - a*t
+            if (mu > 0) {
+                velocity -= (deceleration / 60); // 60fps approx
+                if (velocity < 0) velocity = 0;
+            }
+
+            posX += velocity;
+
+            // Deep Space Wrap-around
+            const trackWidth = track.offsetWidth;
+            if (mu === 0 && posX > trackWidth) {
+                posX = 0;
+            }
+
+            // Update Visuals
+            puck.style.left = posX + 'px';
+            arrow.style.left = (posX + 20) + 'px';
+            arrow.style.transform = `translateY(-50%) scaleX(${velocity * 10})`;
+            
+            document.getElementById('val-speed').innerText = velocity.toFixed(2);
+            document.getElementById('val-force').innerText = (velocity > 0 ? frictionForce : 0).toFixed(2);
+
+            // Explanations
+            if (mu === 0) {
+                explanation.innerHTML = "<strong>Zero Friction:</strong> Look at the Velocity Arrow! It isn't changing. Without an external force, the puck's <strong>Inertia</strong> keeps it moving at the same speed forever.";
+            } else if (velocity > 0) {
+                explanation.innerHTML = "<strong>Friction at work:</strong> The puck is slowing down because friction is an <strong>external force</strong> pushing against it. This changes its state of motion.";
+            }
+
+            if (velocity > 0) {
+                animationId = requestAnimationFrame(step);
+            } else {
+                endSim();
+            }
+        }
+        step();
+    }
+
+    function endSim() {
+        state = 'STOPPED';
+        const distance = Math.abs(posX - predictionX);
+        if (distance < 30) {
+            explanation.innerHTML = "<strong>Great Intuition!</strong> You predicted the stopping point accurately. Friction removed the puck's kinetic energy.";
+        } else {
+            explanation.innerHTML = "<strong>Observe:</strong> The puck stopped when friction finally overcame its initial inertia.";
+        }
+    }
+
+    function resetSim() {
+        cancelAnimationFrame(animationId);
+        state = 'PREDICT';
+        posX = 50;
+        velocity = 0;
+        predictionX = null;
+        puck.style.left = '50px';
+        arrow.style.display = 'none';
+        flag.style.display = 'none';
+        kickBtn.style.display = 'none';
+        kickBtn.disabled = false;
+        document.getElementById('never-stop-check').checked = false;
+        document.getElementById('val-speed').innerText = "0.0";
+        document.getElementById('val-force').innerText = "0.0";
+        explanation.innerHTML = "<strong>Phase 1: Adjust & Predict.</strong> Choose your parameters, then place your prediction flag.";
+        updateParams();
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+**MODULE SPECIFICATION: "The Bubble Factory"**
+
+**Concept:** Photosynthesis is the process by which plants use sunlight, water, and carbon dioxide to create oxygen and energy. This app uses an aquatic plant (Elodea) in a beaker to visualize the rate of photosynthesis through oxygen bubble production.
+
+**SPECIFICATIONS:**
+
+**1. Core Interactive Loop: Predict → Adjust → Observe → Understand**
+*   **Predict:** Before moving any slider for the first time, a "Prediction Overlay" appears asking: *"If you increase this factor, what will happen to the bubble rate?"* (Options: Increase, Decrease, Stay the Same).
+*   **Adjust:** Once a prediction is made, the sliders unlock.
+*   **Observe:** The user sees real-time changes in the beaker.
+*   **Understand:** Dynamic text explains the biological "why" behind the result.
+
+**2. Adjustable Parameters (The Inputs)**
+*   **Light Intensity (0–100%):** Controlled via a slider. Moving it closer to 100% increases the brightness of a virtual lamp shining on the beaker.
+*   **CO2 Concentration (0–1000 ppm):** Controlled via a slider. Represents the amount of dissolved CO2 in the water.
+*   **Water Temperature (0°C–50°C):** Controlled via a slider. A thermometer in the beaker reflects the change.
+
+**3. Visual Feedback (The Outputs)**
+*   **The Bubble Factory:** An animated aquatic plant inside a glass beaker. The rate of rising oxygen bubbles must mathematically correlate to the sliders.
+*   **The BPM Meter:** A "Bubbles Per Minute" digital readout that updates in real-time.
+*   **The Rate Graph:** A small, live-scrolling line chart showing the "Photosynthetic Rate" over time, allowing students to see how changes create "peaks" or "plateaus."
+*   **Color Shifts:** The water tint should change slightly (e.g., warmer/redder at high temps, brighter/yellow at high light).
+
+**4. Educational Logic & Explanations (The "Why")**
+The app must display "Insight Cards" based on the following logic:
+*   **Limiting Factors:** If Light is at 100% but CO2 is at 0%, the BPM stays at zero. *Insight: "Even with perfect light, a plant can't build sugar without carbon dioxide."*
+*   **The Plateau:** Once Light reaches ~80%, increasing it further should have diminishing returns. *Insight: "The plant’s 'machinery' is at max capacity. Adding more light won't speed things up anymore."*
+*   **The Temperature Curve:** Rate increases until 30°C–35°C, then drops sharply toward 50°C. *Insight: "Too hot! High temperatures damage the enzymes the plant needs to survive."*
+
+**5. Design Philosophy**
+*   **Clean & Minimal:** Use a white or light-gray background with "Laboratory Blue" accents.
+*   **Tactile:** Sliders should feel responsive. Bubbles should have a slight "wobble" physics for engagement.
+*   **One-Page Layout:** No scrolling required; all controls and the beaker should be visible on a single screen.
+
+**6. Implementation Note for Developer:**
+*   Use a simple `setInterval` to trigger bubble animations based on a `rate` variable.
+*   Formula for Rate: `Rate = (Light * CO2) * TemperatureModifier`.
+*   The `TemperatureModifier` should follow a bell curve (peaking at 30°C and crashing at 45°C+).
+*   All logic, CSS, and JS must be contained within a single `.html` file.

@@ -1,0 +1,47 @@
+In mathematics, functions describe the relationship between inputs and outputs. By changing specific constants (parameters), students can see how a graph stretches, shifts, or flips.
+
+Build an interactive "Function Playground" to help learners intuitively understand the behavior of four fundamental function types.
+
+### SPECIFICATIONS:
+
+**1. Function Selection:**
+*   The app must feature a toggle or tab bar to switch between four function types:
+    *   **Linear:** $y = mx + b$
+    *   **Quadratic:** $y = ax^2 + c$
+    *   **Exponential:** $y = a \cdot b^x$
+    *   **Trigonometric:** $y = a \cdot \sin(bx)$
+
+**2. Adjustable Parameters (Sliders):**
+*   The app must provide 2 contextual sliders based on the selected function:
+    *   **Linear:** $m$ (Slope: -5 to 5) and $b$ (Y-intercept: -10 to 10).
+    *   **Quadratic:** $a$ (Width/Direction: -2 to 2) and $c$ (Vertical Shift: -10 to 10).
+    *   **Exponential:** $a$ (Initial Value: 0.1 to 5) and $b$ (Growth/Decay Rate: 0.1 to 3).
+    *   **Trigonometric:** $a$ (Amplitude: 1 to 10) and $b$ (Frequency: 0.5 to 5).
+
+**3. Real-Time Visual Feedback:**
+*   **The Graph:** A large, clean Cartesian coordinate system ($x$ and $y$ axes from -10 to 10).
+*   **The Curve:** The function graph must update instantly as sliders move.
+*   **Key Points:** Highlight and label the Y-intercept $(0, y)$ with a visible dot that moves dynamically.
+
+**4. The "Predict & Match" Mechanic:**
+*   Include a **"Target Mode"** button. When activated, the app displays a static "ghost" graph (a dashed line) of a random function of the same type.
+*   The student must adjust their sliders to make their solid line overlap the ghost line perfectly.
+*   When the lines match (within a small margin of error), trigger a "Match Found!" visual celebration (e.g., the line glows or turns green).
+
+**5. Progressive Educational Insights:**
+*   Display a dynamic "Insight Box" that changes based on slider movement:
+    *   *Example (Linear):* As $m$ becomes negative, display: "The slope is negative, so the line now moves downhill from left to right."
+    *   *Example (Quadratic):* As $a$ approaches 0, display: "As '$a$' gets smaller, the parabola widens. If '$a$' is negative, it opens downward!"
+    *   *Example (Exponential):* If $b < 1$, display: "Since your base is less than 1, you are showing Exponential Decay."
+
+**6. Design Philosophy:**
+*   **Clean & Minimal:** Use a white background, a light grey grid, and high-contrast colors for the functions (e.g., Electric Blue for the active line, Soft Grey for the target).
+*   **Mobile Friendly:** Sliders should be large enough for touch interaction.
+*   **Single-File Implementation:** All CSS (Flexbox/Grid for layout) and Logic (Vanilla JavaScript using a simple `<canvas>` element or SVG for graphing) must reside in one HTML file.
+
+**7. Interaction Loop:**
+1.  **Select:** Choose a function type (e.g., Quadratic).
+2.  **Predict:** Turn on "Target Mode" and look at the ghost curve.
+3.  **Adjust:** Move sliders $a$ and $c$, observing how the parabola stretches and shifts.
+4.  **Observe:** Watch the Insight Box explain the transformation in real-time.
+5.  **Understand:** Successfully match the curve to internalize how the parameters control the math.

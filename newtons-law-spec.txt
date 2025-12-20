@@ -1,0 +1,49 @@
+**Topic:** Newton's First Law (Inertia)
+**Domain:** Science / Physics
+**Module:** "The Frictionless Ice Rink"
+**Learning Goal:** Students will discover that an object's motion only changes when an external force (friction) is applied, and that in the absence of friction, an object will maintain its velocity indefinitely.
+
+---
+
+### SPECIFICATIONS:
+
+**1. The Setup**
+The app features a top-down view of a "test track." A puck sits at a starting line on the left. The track is marked with distance indicators (meters).
+
+**2. Adjustable Parameters (The "Adjust" Phase)**
+*   **Surface Type (Friction):** A slider or toggle with four presets: 
+    *   *Sand* (High Friction: $\mu=0.5$)
+    *   *Grass* (Medium Friction: $\mu=0.2$)
+    *   *Ice* (Low Friction: $\mu=0.02$)
+    *   *Deep Space* (Zero Friction: $\mu=0$)
+*   **Kick Strength (Initial Velocity):** A slider ranging from 1 to 10 (representing initial m/s).
+*   **Puck Mass:** A toggle between "Light" (1kg) and "Heavy" (5kg) to show that while mass affects acceleration, the *principle* of inertia remains the same.
+
+**3. The Prediction Mechanic (The "Predict" Phase)**
+*   Before the user can click "KICK," they must enter **Predict Mode**. 
+*   In this mode, the user clicks on the track to place a "Prediction Flag" where they think the puck will stop. 
+*   If "Deep Space" is selected, the user must instead click a checkbox that says: *"I predict it will never stop."*
+
+**4. Visual Feedback (The "Observe" Phase)**
+*   **The Kick:** When the user hits "KICK," the puck moves across the screen based on the chosen parameters.
+*   **Vector Arrow:** A bright green arrow attached to the puck represents its **Velocity**. As the puck slows down due to friction, the arrow visibly shrinks in real-time.
+*   **Real-Time Data Overlay:** A small panel shows:
+    *   *Current Speed:* (m/s)
+    *   *Net Force:* (Newtons, showing the force of friction acting against motion).
+*   **The Outcome:** If the puck stops near the Prediction Flag, a "Great Intuition!" message appears. If "Deep Space" is selected, the puck wraps around the screen infinitely, and the velocity arrow stays exactly the same length.
+
+**5. Educational Explanations (The "Understand" Phase)**
+Dynamic text boxes appear based on the state of the simulation:
+*   **When Friction > 0:** "The puck is slowing down because Friction is an **external force** pushing against it. This changes its state of motion."
+*   **When Friction = 0:** "Look at the Velocity Arrow! It isn't changing. Without an external force like friction, the puck's **Inertia** keeps it moving at the same speed forever."
+*   **On Mass Change:** "A heavier puck is harder to start, but the rule remains: no external force means no change in motion."
+
+**6. User Interface & Design Philosophy**
+*   **Clean Lab Aesthetic:** Use a dark blueprint background with neon-line accents for the track.
+*   **Single-Action Loop:** A prominent "RESET" button that clears the track and returns the user to the "Predict" phase.
+*   **Minimalist Controls:** Use large, tactile sliders and buttons suitable for both mouse and touch input.
+
+**7. Core Logic for Developer**
+*   Use a simple physics loop: `velocity = velocity - friction`.
+*   If `friction == 0`, `velocity` remains constant.
+*   The "Deep Space" mode should trigger a "seamless wrap" animation where the puck exits the right side and enters the left side of the track to simulate infinite motion without needing an infinite canvas.

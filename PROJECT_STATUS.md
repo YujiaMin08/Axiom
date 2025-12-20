@@ -133,20 +133,24 @@ Planner 会分配不同类型的模块，每种都需要对应的内容生成 AP
 - ⏳ 待接入：集成到主系统
 - **优先级**：🟡 中等
 
-##### 2.3 交互实验生成 API ⭐
+##### 2.3 交互实验生成 API ⭐ ✅ 已完成测试！
 **用于模块类型**：experiment, manipulation
-- ❌ 实现 `generateExperimentContent(topic, domain, variables)`
-- ❌ 使用 Gemini 3 Flash（结构化生成）
-- ❌ 输出：
-  ```typescript
-  {
-    variables: [{ name, label, min, max, default, unit }],
-    visualization_type: 'chart' | 'animation' | '3d',
-    result_formula: string,
-    explanation: string
-  }
-  ```
-- ❌ 支持可调参数定义
+- ✅ 实现 `generateSimpleInteractiveApp()` - 两步生成（Spec + HTML）
+- ✅ 使用 Gemini 3 Flash（结构化能力强）
+- ✅ 输出完整的自包含 HTML 文件（inline CSS/JS）
+- ✅ 支持 Predict → Manipulate → Observe → Explain 交互循环
+- ✅ 已测试验证（4个不同领域）：
+  - 🧪 光合作用气泡实验室（生物）- 调节光/CO2/温度
+  - 🚀 牛顿第一定律冰球模拟（物理）- 调节摩擦力/力度
+  - 📐 数学函数探索器（数学）- 4种函数类型可视化
+  - 🏠 3D物体观察工具（几何）- 空间想象力训练
+- ✅ 设计特点：
+  - 明亮白色背景（#FDFCF5）
+  - 无quiz干扰，纯粹探索
+  - 200-400行代码
+  - 移动端响应式
+  - 使用现代Web技术（Canvas/Chart.js/SVG）
+- ⏳ 待接入：集成到主系统
 - **优先级**：🔴 最高（PRD 核心特性）
 
 ##### 2.4 数学公式生成 API
@@ -586,6 +590,7 @@ canvases (画布)
 ✅ **Gemini 3 Flash Planner** - 智能模块规划，支持 27+ 种模块类型，100% 测试通过率  
 ✅ **Gemini 2.5 Flash 文本生成器** - 基础文本内容生成，双语支持，质量出色  
 ✅ **Gemini 2.5 Flash 故事生成器** - 4种故事类型，智能长度控制，拟人化叙事精彩  
+✅ **Gemini 3 Flash 交互应用生成器** - 完整HTML生成，4个领域验证通过，Predict→Manipulate→Observe循环  
 
 ---
 

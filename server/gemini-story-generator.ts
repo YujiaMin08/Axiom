@@ -157,14 +157,14 @@ Bilingual Approach:
   if (isSingleWord && domain === 'LANGUAGE') {
     targetLength = '50-120 words';  // 单词学习：超短故事
   } else if (isMultiWord && domain === 'LANGUAGE') {
-    targetLength = '150-300 words';  // 多词融合：中等长度
+    targetLength = '100-200 words';  // 多词融合：中等长度
   } else {
     // Science/Liberal Arts 可以稍长
     const storyLength = context?.story_length || 'medium';
     const lengthGuide = {
-      short: '200-300 words',
-      medium: '300-500 words',
-      long: '500-800 words'
+      short: '50-80 words',
+      medium: '80-130 words',
+      long: '130-200 words'
     };
     targetLength = lengthGuide[storyLength];
   }

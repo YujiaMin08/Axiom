@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Function Playground</title>
+    <style>
+        :root {
+            --bg: #FDFCF5;
+            --surface: #ffffff;
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --success: #10b981;
+            --text: #1e293b;
+            --border: #e2e8f0;
+            --ghost: #cbd5e1;
+        }
+
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .container { max-width: 900px; width: 100%; background: var(--surface); border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
+        
+        /* Header & Tabs */
+        .header { padding: 24px; border-bottom: 1px solid var(--border); text-align: center; }
+        h1 { margin: 0 0 16px 0; font-size: 1.5rem; font-weight: 700; }
+        .tabs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+        .tab-btn { padding: 8px 16px; border: 1px solid var(--border); background: white; border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: 500; color: var(--secondary); }
+        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* Main Layout */
+        .main-content { display: grid; grid-template-columns: 1fr 320px; }
+        @media (max-width: 768px) { .main-content { grid-template-columns: 1fr; } }
+
+        /* Canvas Area */
+        .canvas-container { position: relative; padding: 20px; background: white; display: flex; justify-content: center; align-items: center; }
+        canvas { width: 100%; max-width: 500px; aspect-ratio: 1; border: 1px solid var(--border); border-radius: 8px; cursor: crosshair; }
+
+        /* Controls Area */
+        .controls { padding: 24px; border-left: 1px solid var(--border); display: flex; flex-direction: column; gap: 20px; background: #fafafa; }
+        .slider-group { display: flex; flex-direction: column; gap: 8px; }
+        .slider-header { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; }
+        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--primary); }
+        
+        .target-mode-btn { padding: 12px; border: none; border-radius: 8px; background: var(--text); color: white; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .target-mode-btn.active { background: var(--success); }
+
+        .insight-box { padding: 16px; background: #eff6ff; border-radius: 8px; border-left: 4px solid var(--primary); font-size: 0.9rem; line-height: 1.4; min-height: 80px; transition: 0.3s; }
+        .match-alert { color: var(--success); font-weight: 700; text-align: center; height: 20px; margin-top: -10px; visibility: hidden; }
+        .match-alert.show { visibility: visible; animation: bounce 0.5s ease; }
+
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Function Playground</h1>
+        <div class="tabs" id="funcTabs">
+            <button class="tab-btn active" onclick="setFunc('linear')">Linear</button>
+            <button class="tab-btn" onclick="setFunc('quadratic')">Quadratic</button>
+            <button class="tab-btn" onclick="setFunc('exponential')">Exponential</button>
+            <button class="tab-btn" onclick="setFunc('trig')">Trigonometric</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="canvas-container">
+            <canvas id="graphCanvas" width="500" height="500"></canvas>
+        </div>
+
+        <div class="controls">
+            <div class="match-alert" id="matchAlert">✨ Match Found! Perfect! ✨</div>
+            
+            <div id="sliders">
+                <!-- Dynamic Sliders -->
+            </div>
+
+            <button class="target-mode-btn" id="targetBtn" onclick="toggleTargetMode()">Target Mode: OFF</button>
+            
+            <div class="insight-box" id="insightBox">
+                Adjust the sliders to see how the function changes!
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('graphCanvas');
+    const ctx = canvas.getContext('2d');
+    const slidersContainer = document.getElementById('sliders');
+    const insightBox = document.getElementById('insightBox');
+    const matchAlert = document.getElementById('matchAlert');
+    const targetBtn = document.getElementById('targetBtn');
+
+    let currentFunc = 'linear';
+    let params = { p1: 1, p2: 0 }; // m, b | a, c | a, b | a, b
+    let targetParams = { p1: 0, p2: 0 };
+    let targetMode = false;
+
+    const config = {
+        linear: { name: 'Linear', p1: { label: 'Slope (m)', min: -5, max: 5, step: 0.1, def: 1 }, p2: { label: 'Y-Intercept (b)', min: -10, max: 10, step: 0.5, def: 0 } },
+        quadratic: { name: 'Quadratic', p1: { label: 'Width (a)', min: -2, max: 2, step: 0.1, def: 1 }, p2: { label: 'Vert Shift (c)', min: -10, max: 10, step: 0.5, def: 0 } },
+        exponential: { name: 'Exponential', p1: { label: 'Initial (a)', min: 0.1, max: 5, step: 0.1, def: 1 }, p2: { label: 'Rate (b)', min: 0.1, max: 3, step: 0.1, def: 1.5 } },
+        trig: { name: 'Trigonometric', p1: { label: 'Amplitude (a)', min: 1, max: 10, step: 0.5, def: 2 }, p2: { label: 'Frequency (b)', min: 0.5, max: 5, step: 0.1, def: 1 } }
+    };
+
+    function setFunc(type) {
+        currentFunc = type;
+        params.p1 = config[type].p1.def;
+        params.p2 = config[type].p2.def;
+        
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.innerText.toLowerCase().includes(type.substring(0,4)));
+        });
+
+        if(targetMode) generateTarget();
+        renderSliders();
+        draw();
+    }
+
+    function renderSliders() {
+        const c = config[currentFunc];
+        slidersContainer.innerHTML = `
+            <div class="slider-group">
+                <div class="slider-header"><span>${c.p1.label}</span><span id="v1">${params.p1}</span></div>
+                <input type="range" min="${c.p1.min}" max="${c.p1.max}" step="${c.p1.step}" value="${params.p1}" oninput="updateParam('p1', this.value)">
+            </div>
+            <div class="slider-group">
+                <div class="slider-header"><span>${c.p2.label}</span><span id="v2">${params.p2}</span></div>
+                <input type="range" min="${c.p2.min}" max="${c.p2.max}" step="${c.p2.step}" value="${params.p2}" oninput="updateParam('p2', this.value)">
+            </div>
+        `;
+    }
+
+    function updateParam(p, val) {
+        params[p] = parseFloat(val);
+        document.getElementById(p === 'p1' ? 'v1' : 'v2').innerText = val;
+        updateInsight();
+        draw();
+    }
+
+    function toggleTargetMode() {
+        targetMode = !targetMode;
+        targetBtn.innerText = targetMode ? "Target Mode: ON" : "Target Mode: OFF";
+        targetBtn.classList.toggle('active', targetMode);
+        if(targetMode) generateTarget();
+        draw();
+    }
+
+    function generateTarget() {
+        const c = config[currentFunc];
+        targetParams.p1 = +(Math.random() * (c.p1.max - c.p1.min) + c.p1.min).toFixed(1);
+        targetParams.p2 = +(Math.random() * (c.p2.max - c.p2.min) + c.p2.min).toFixed(1);
+    }
+
+    function calculateY(x, p) {
+        switch(currentFunc) {
+            case 'linear': return p.p1 * x + p.p2;
+            case 'quadratic': return p.p1 * (x * x) + p.p2;
+            case 'exponential': return p.p1 * Math.pow(p.p2, x);
+            case 'trig': return p.p1 * Math.sin(p.p2 * x);
+        }
+    }
+
+    function updateInsight() {
+        let text = "";
+        const {p1, p2} = params;
+        if(currentFunc === 'linear') {
+            text = p1 > 0 ? "The line goes up! Higher 'm' makes it steeper." : p1 < 0 ? "Negative slope: the line moves downhill." : "Slope is 0: the line is perfectly flat.";
+        } else if(currentFunc === 'quadratic') {
+            text = Math.abs(p1) < 0.5 ? "As 'a' gets smaller, the parabola widens." : "Higher 'a' makes the curve narrower.";
+            if(p1 < 0) text += " Since 'a' is negative, it opens downward!";
+        } else if(currentFunc === 'exponential') {
+            text = p2 < 1 ? "Base is less than 1: this is Exponential Decay." : "Base is greater than 1: this is Exponential Growth.";
+        } else {
+            text = `Amplitude is ${p1}, stretching the wave vertically. Frequency ${p2} controls how many waves fit.`;
+        }
+        insightBox.innerText = text;
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const scale = canvas.width / 20; // -10 to 10
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+
+        // Draw Grid
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1;
+        for(let i = 0; i <= 20; i++) {
+            ctx.beginPath(); ctx.moveTo(i * scale, 0); ctx.lineTo(i * scale, canvas.height); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, i * scale); ctx.lineTo(canvas.width, i * scale); ctx.stroke();
+        }
+
+        // Draw Axes
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(0, centerY); ctx.lineTo(canvas.width, centerY); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(centerX, 0); ctx.lineTo(centerX, canvas.height); ctx.stroke();
+
+        // Draw Target (Ghost)
+        if(targetMode) {
+            drawCurve(targetParams, 'rgba(203, 213, 225, 0.8)', true);
+        }
+
+        // Draw Active Curve
+        const isMatch = targetMode && Math.abs(params.p1 - targetParams.p1) < 0.2 && Math.abs(params.p2 - targetParams.p2) < 0.4;
+        drawCurve(params, isMatch ? '#10b981' : '#2563eb', false);
+        matchAlert.classList.toggle('show', isMatch);
+
+        // Draw Y-Intercept Dot
+        const yInt = calculateY(0, params);
+        if(yInt <= 10 && yInt >= -10) {
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY - (yInt * scale), 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.font = "bold 12px sans-serif";
+            ctx.fillText(`(0, ${yInt.toFixed(1)})`, centerX + 10, centerY - (yInt * scale) - 10);
+        }
+    }
+
+    function drawCurve(p, color, isDashed) {
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 3;
+        if(isDashed) ctx.setLineDash([5, 5]); else ctx.setLineDash([]);
+        
+        const scale = canvas.width / 20;
+        let first = true;
+
+        for(let px = 0; px <= canvas.width; px++) {
+            const x = (px - canvas.width/2) / scale;
+            const y = calculateY(x, p);
+            const py = canvas.height/2 - (y * scale);
+            
+            if(py >= 0 && py <= canvas.height) {
+                if(first) { ctx.moveTo(px, py); first = false; }
+                else ctx.lineTo(px, py);
+            } else {
+                first = true;
+            }
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+
+    // Initialize
+    setFunc('linear');
+</script>
+
+</body>
+</html>
