@@ -1,0 +1,127 @@
+{
+  "topic": "Why does your tongue stick to metal in winter?",
+  "domain": "LIBERAL_ARTS",
+  "planner_output": {
+    "topic_analysis": {
+      "main_topic": "The Science and Safety of Tongue-to-Metal Adhesion in Winter",
+      "complexity_level": "intermediate",
+      "key_concepts": [
+        "Thermal Conductivity",
+        "Heat Transfer Rates",
+        "Phase Changes (Freezing)",
+        "Biological Thermal Regulation",
+        "Physical Adhesion"
+      ]
+    },
+    "module_plan": [
+      {
+        "type": "story",
+        "title": "The Frozen Flagpole Mystery",
+        "description": "A narrative-driven introduction using the common cultural trope of a child sticking their tongue to a frozen pole, setting the stage for the 'why' behind the 'ouch'."
+      },
+      {
+        "type": "perspective_physics",
+        "title": "Heat Thieves: Thermal Conductivity",
+        "description": "An exploration of why metal conducts heat away from the body much faster than wood or plastic, focusing on electron mobility and thermal equilibrium."
+      },
+      {
+        "type": "perspective_biology",
+        "title": "Saliva: The Instant Glue",
+        "description": "An analysis of the tongue's moisture and how the body's internal heat cannot keep up with the rapid cooling, causing the saliva to undergo a phase change into ice within the tongue's pores."
+      },
+      {
+        "type": "manipulation",
+        "title": "The Heat Transfer Lab",
+        "description": "An interactive tool where students can 'touch' various materials (copper, wood, glass) at sub-zero temperatures and observe a real-time graph of heat energy leaving the tongue."
+      },
+      {
+        "type": "perspective_culture",
+        "title": "Urban Legends and Safety Education",
+        "description": "A look at how this physical phenomenon has become a staple of winter lore and the sociological impact of shared 'don't do that' cultural warnings."
+      },
+      {
+        "type": "challenge",
+        "title": "The Rescue Mission",
+        "description": "A scenario-based challenge where students must apply their knowledge of heat transfer to decide the safest way to unstick a tongue without causing tissue damage."
+      }
+    ],
+    "learning_path_reasoning": "The sequence begins with a narrative 'story' to hook students using a familiar cultural reference. It then moves into the core scientific 'perspective_physics' and 'perspective_biology' modules to explain the underlying mechanics of heat transfer and physiological response. The 'manipulation' module provides a hands-on way to visualize the abstract concept of conductivity. Finally, the 'perspective_culture' and 'challenge' modules transition the knowledge into real-world context and practical application, ensuring the student understands both the theory and the consequences."
+  },
+  "generated_samples": [
+    {
+      "module_title": "The Frozen Flagpole Mystery",
+      "module_type": "story",
+      "content_preview": {
+        "title": "The Frozen Flagpole Mystery: Why Your Tongue Sticks to Metal in Winter",
+        "body": "Have you ever heard the classic (and painful!) story of someone sticking their tongue to a frozen flagpole in winter? Perhaps you've even wondered, \"Why does that happen?\" It's not just a silly prank ...",
+        "key_points": [
+          "Metal is an excellent **thermal conductor** (热导体), meaning it transfers heat very quickly.",
+          "When a warm, wet tongue touches very cold metal, the metal rapidly draws heat from the tongue's **saliva** (唾液).",
+          "This rapid heat loss causes the saliva to freeze instantly, forming an ice bond that sticks the tongue to the metal.",
+          "Other materials like wood or plastic don't cause this because they are poor thermal conductors."
+        ],
+        "difficulty_level": "beginner",
+        "estimated_reading_time": 2,
+        "main_explanation": "undefined..."
+      }
+    },
+    {
+      "module_title": "Heat Thieves: Thermal Conductivity",
+      "module_type": "perspective_physics",
+      "content_preview": {
+        "title": "Heat Thieves: The Physics of the Frozen Tongue",
+        "discipline": "Physics",
+        "lens_description": "Physics reveals that this phenomenon is a high-speed race between energy transfer rates and state changes, governed by the movement of free electrons.",
+        "main_explanation": "From a physics perspective, your tongue sticking to metal is not a chemical reaction but a consequence of superior Thermal Conductivity (热导率). Metals are exceptional conductors because of their 'sea o...",
+        "key_concepts": [
+          "Thermal Conductivity (热导率)",
+          "Free Electrons (自由电子)",
+          "Phase Transition (相变)",
+          "Heat Flux (热通量)",
+          "Thermal Equilibrium (热平衡)"
+        ],
+        "connection_to_other_perspectives": "While biology focuses on the cellular damage (frostbite) and the sensory response of nerves, physics explains the 'why' and 'how fast'—quantifying why metal is a more dangerous 'heat thief' than wood even at the same temperature.",
+        "discipline_specific_questions": [
+          "If the metal object was very small, such as a tiny needle, would your tongue still stick? Consider the role of Heat Capacity (热容).",
+          "Why does the presence of wind (convection) increase the likelihood of this phenomenon occurring?",
+          "How would the rate of heat transfer change if the metal was coated with a thin layer of polymer (plastic)?"
+        ],
+        "visual_elements": [
+          "A microscopic animation showing 'Free Electrons' rushing away from the point of contact, carrying heat packets into the bulk of the metal.",
+          "A temperature-over-time graph showing the interface temperature plummeting below 0°C for metal vs. staying above freezing for wood.",
+          "A cross-section diagram showing liquid water molecules aligning into a crystalline ice lattice within the ridges of the tongue's surface."
+        ],
+        "body": "undefined..."
+      }
+    },
+    {
+      "module_title": "Saliva: The Instant Glue",
+      "module_type": "perspective_biology",
+      "content_preview": {
+        "title": "Saliva: The Instant Glue",
+        "discipline": "Biology (生物学)",
+        "lens_description": "生物学揭示了舌头的微观解剖结构与人体的体温调节机制（Thermoregulation）是如何在极寒条件下失效并导致机械性冻结的。",
+        "main_explanation": "从生物学角度看，舌头并不是一个平滑的表面，而是布满了被称为‘舌乳头’（Papillae）的微小突起，这极大地增加了其表面积。舌头表面覆盖着一层由99%的水和1%的黏蛋白（Mucins）组成的唾液。当舌头接触极冷金属时，唾液迅速渗入舌乳头之间的微小缝隙。虽然人体通过内环境稳态（Homeostasis）机制试图维持体温，并通过血管舒张（Vasodilation）向舌部输送温暖的血液，但金属极高的导热率...",
+        "key_concepts": [
+          "Papillae (舌乳头)",
+          "Thermoregulation (体温调节)",
+          "Homeostasis (内环境稳态)",
+          "Vasodilation (血管舒张)",
+          "Mucins (黏蛋白)"
+        ],
+        "connection_to_other_perspectives": "物理学视角关注的是热能流动的速率和金属的电子传导，而生物学则补充了这种物理现象如何战胜了人体的生理防御系统。物理学解释了热量为何离开，生物学则解释了由于舌头的特殊解剖结构，热量的流失如何导致了组织层面的机械锁死。",
+        "discipline_specific_questions": [
+          "如果人类舌头表面像指甲一样平滑且没有孔隙，这种‘粘连’现象还会发生吗？",
+          "为什么身体的血管舒张机制在这种特定情况下无法保护舌头免于冻结？",
+          "唾液中的黏蛋白成分在结冰过程中是否增加了冰与舌头组织之间的粘合强度？"
+        ],
+        "visual_elements": [
+          "舌乳头（Papillae）微观结构的横截面图，显示唾液如何在缝隙中凝固。",
+          "舌部血管系统在受冷时的血液流动模拟图，标注出热量散失与补充的差值。",
+          "对比图：湿润的手指与舌头接触冷金属的差异，强调表面粘膜与角质层的区别。"
+        ],
+        "body": "undefined..."
+      }
+    }
+  ]
+}

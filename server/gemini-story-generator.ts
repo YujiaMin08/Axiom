@@ -138,11 +138,12 @@ Narrative Craft:
 - **Emotional Arc**: Build tension or curiosity, then resolution
 - **Learning Integration**: The "lesson" emerges naturally, not forced
 
-Illustration Prompts:
+Illustration Prompt:
 
-- Provide 2-4 visual scene descriptions that would enhance the story
-- Be specific about setting, mood, and key visual elements
-- Think about what would make the concept "visible"
+- Provide ONE key visual scene that best captures the story's essence
+- Be highly specific about setting, characters, mood, and visual elements
+- This will be used for image generation - clarity and detail are critical
+- Choose the most important moment or concept to visualize
 
 Bilingual Approach:
 - Write the story primarily in English for narrative flow
@@ -221,7 +222,7 @@ Make it memorable and meaningful within the word limit!`;
       illustration_prompts: {
         type: Type.ARRAY,
         items: { type: Type.STRING },
-        description: "2-4 specific scene descriptions for illustrations"
+        description: "ONE key illustration that captures the story's essence. Be specific and detailed for image generation."
       },
       story_type: {
         type: Type.STRING,
