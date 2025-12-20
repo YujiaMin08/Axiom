@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photosynthesis vs Cellular Respiration: Nature's Energy Cycle</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #FDFCF5;
+            color: #1e293b;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 { font-size: 2.5em; margin-bottom: 40px; text-align: center; }
+        
+        /* 对比表格 */
+        .comparison-table {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: #3b82f6;
+            color: white;
+            padding: 20px;
+            text-align: left;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        td {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        tr:last-child td { border-bottom: none; }
+        .aspect-cell {
+            font-weight: 600;
+            color: #0f172a;
+            background: #f8fafc;
+            width: 200px;
+        }
+        .value-cell {
+            color: #475569;
+            line-height: 1.6;
+        }
+        .insight {
+            margin-top: 8px;
+            padding: 12px;
+            background: #fef3c7;
+            border-left: 3px solid #f59e0b;
+            font-size: 0.95em;
+            font-style: italic;
+            color: #92400e;
+        }
+        
+        /* 相似/差异 */
+        .cards-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+        .card h2 {
+            font-size: 1.3em;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card.similarities h2 { color: #10b981; }
+        .card.differences h2 { color: #ef4444; }
+        .card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .card li {
+            padding: 12px;
+            margin: 8px 0;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 3px solid;
+        }
+        .similarities li { border-color: #10b981; }
+        .differences li { border-color: #ef4444; }
+        
+        /* 核心洞察 */
+        .key-insight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: 500;
+            line-height: 1.6;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <h1>Photosynthesis vs Cellular Respiration: Nature's Energy Cycle</h1>
+    
+    <div class="comparison-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>对比维度</th>
+                    <th>Photosynthesis</th><th>Cellular Respiration</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                    <tr>
+                        <td class="aspect-cell">Primary Purpose</td>
+                        <td class="value-cell">To capture solar energy and store it in the chemical bonds of glucose.<div class="insight">→ Energy Storage vs. Energy Release</div></td><td class="value-cell">To break down glucose and harvest its chemical energy to produce ATP.<div class="insight">→ Energy Storage vs. Energy Release</div></td>
+                    </tr>
+                
+                    <tr>
+                        <td class="aspect-cell">Cellular Location</td>
+                        <td class="value-cell">Chloroplasts (specifically the thylakoid membranes and stroma).<div class="insight">→ Specialized Organelles</div></td><td class="value-cell">Cytoplasm (Glycolysis) and Mitochondria (Krebs cycle/ETC).<div class="insight">→ Specialized Organelles</div></td>
+                    </tr>
+                
+                    <tr>
+                        <td class="aspect-cell">Chemical Equation</td>
+                        <td class="value-cell">6CO2 + 6H2O + Light -> C6H12O6 + 6O2<div class="insight">→ Inverse Reactants and Products</div></td><td class="value-cell">C6H12O6 + 6O2 -> 6CO2 + 6H2O + ATP<div class="insight">→ Inverse Reactants and Products</div></td>
+                    </tr>
+                
+                    <tr>
+                        <td class="aspect-cell">Energy Transformation</td>
+                        <td class="value-cell">Light energy is converted into chemical energy (Endothermic).<div class="insight">→ Endothermic vs. Exothermic</div></td><td class="value-cell">Chemical energy is converted into kinetic energy and heat (Exothermic).<div class="insight">→ Endothermic vs. Exothermic</div></td>
+                    </tr>
+                
+                    <tr>
+                        <td class="aspect-cell">Occurrence</td>
+                        <td class="value-cell">Occurs only in autotrophs (plants, algae, some bacteria) during daylight.<div class="insight">→ Organism and Timing</div></td><td class="value-cell">Occurs in all living organisms (autotrophs and heterotrophs) at all times.<div class="insight">→ Organism and Timing</div></td>
+                    </tr>
+                
+            </tbody>
+        </table>
+    </div>
+
+    <div class="cards-container">
+        <div class="card similarities">
+            <h2>🔗 相似之处</h2>
+            <ul>
+                <li>Both processes utilize an Electron Transport Chain (ETC) to create a proton gradient.</li><li>Both rely on the enzyme ATP Synthase to generate energy currency for the cell.</li><li>Both are essential components of the Global Carbon Cycle, maintaining atmospheric balance.</li>
+            </ul>
+        </div>
+        
+        <div class="card differences">
+            <h2>⚡ 差异之处</h2>
+            <ul>
+                <li>Photosynthesis is an anabolic process (building molecules), whereas cellular respiration is a catabolic process (breaking molecules down).</li><li>The waste products of photosynthesis (Oxygen) are the necessary inputs for respiration, and vice versa.</li><li>Photosynthesis requires an external energy source (sunlight), while respiration relies on internal stored energy (glucose).</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="key-insight">
+        💡 Photosynthesis and cellular respiration function as a perfectly balanced biological mirror, where the output of one serves as the vital input for the other to sustain life.
+    </div>
+</body>
+</html>
