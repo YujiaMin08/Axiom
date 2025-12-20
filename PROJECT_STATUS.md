@@ -173,23 +173,39 @@ Planner 会分配不同类型的模块，每种都需要对应的内容生成 AP
 - ⏳ 待接入：集成到主系统
 - **优先级**：🟡 中等
 
-##### 2.5 测验生成 API
+###### 2.5 测验生成 API ✅ 已完成测试！
 **用于模块类型**：quiz, challenge
-- ❌ 实现 `generateQuizContent(topic, difficulty, question_count)`
-- ❌ 使用 Gemini 3 Flash（快速生成）
-- ❌ 输出：
+- ✅ 实现 `generateQuizContent(topic, domain, modulePlan, context)`
+- ✅ **智能上下文感知**：基于已生成的其他模块内容出题
+- ✅ 使用 Gemini 3 Flash + Medium Thinking
+- ✅ 输出：
   ```typescript
   {
+    title: string,
     questions: [{
       question: string,
+      question_type: 'multiple_choice' | 'true_false' | 'scenario_based',
       options: string[],
       answer_index: number,
       explanation: string,
-      difficulty: 'easy' | 'medium' | 'hard'
-    }]
+      difficulty: 'easy' | 'medium' | 'hard',
+      source_module: string  // 标注问题来源
+    }],
+    quiz_strategy: string  // AI解释问题设计思路
   }
   ```
-- **优先级**：🟢 普通
+- ✅ 智能适配不同内容组合：
+  - 有 Story → 测试故事细节和词汇应用
+  - 有 Experiment → 测试实验发现和参数关系
+  - 有 Formula → 测试公式应用和概念
+  - 只有 Text → 测试概念理解和场景应用
+- ✅ 已测试验证：
+  - 语言学习（基于故事）- 5个问题，引用故事细节
+  - 知识学习（基于实验）- 5个问题，测试实验发现
+  - 知识学习（无实验）- 5个问题，基于文本+公式
+- ✅ 问题质量：测试理解而非记忆，包含场景应用
+- ⏳ 待接入：集成到主系统
+- **优先级**：🟡 中等
 
 ##### 2.6 跨学科视角生成 API ⭐
 **用于模块类型**：perspective_physics, perspective_chemistry, perspective_biology, etc.
@@ -604,6 +620,7 @@ canvases (画布)
 ✅ **Gemini 2.5 Flash 故事生成器** - 4种故事类型，智能长度控制，拟人化叙事精彩  
 ✅ **Gemini 3 Flash 交互应用生成器** - 完整HTML生成，4个领域验证通过，Predict→Manipulate→Observe循环  
 ✅ **Gemini 2.5 Flash 公式生成器** - LaTeX公式、渐进式推导、符号表、应用示例，支持渐进披露  
+✅ **Gemini 3 Flash Quiz生成器** - 智能上下文感知，基于已生成内容出题，自动适配不同内容组合  
 
 ---
 

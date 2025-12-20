@@ -1,0 +1,97 @@
+{
+  "topic": "apple",
+  "domain": "LANGUAGE",
+  "story": {
+    "title": "The Versatile Apple",
+    "narrative_text": "Lily bit into a crisp, red apple (苹果). Its sweet crunch was a perfect start to her day. Later, her grandmother called her \"the apple of my eye\" (掌上明珠), making her smile. At school, her friend showed off a new *Apple* watch (苹果手表), buzzing with notifications. That evening, as she helped bake an apple pie (苹果派), she realized how one simple word could mean so much. From a healthy snack to a beloved person, and even cutting-edge tech, the *apple* was everywhere.",
+    "key_sentence": "One simple word, \"apple,\" can represent a fruit, a cherished person, a global brand, and a comforting dessert, showcasing its incredible versatility.",
+    "illustration_prompts": [
+      "Lily, a middle school student, biting into a vibrant red apple, juice glistening on her lips, in a bright kitchen.",
+      "Lily hugging her grandmother, who gazes at her with deep affection, a warm, soft light around them.",
+      "A close-up shot of a sleek, modern smartwatch with a recognizable logo on a student's wrist, displaying notifications.",
+      "A golden-brown apple pie cooling on a rustic windowsill, steam gently rising, with a cozy, inviting atmosphere."
+    ],
+    "story_type": "educational",
+    "moral_or_takeaway": "Words can have multiple meanings and applications depending on their context, enriching our language and understanding.",
+    "word_highlights": [
+      "apple",
+      "apple of my eye",
+      "Apple watch",
+      "apple pie"
+    ]
+  },
+  "quiz": {
+    "title": "The Versatile Apple: Language & Context Quiz",
+    "questions": [
+      {
+        "question": "In the story 'The Versatile Apple,' Lily's grandmother calls her 'the apple of my eye.' What does this idiom actually mean in this context?",
+        "question_type": "multiple_choice",
+        "options": [
+          "Lily has eyes that are shaped like small apples.",
+          "Lily is a person who is cherished and loved above others.",
+          "Lily's grandmother wants Lily to eat more fruit.",
+          "Lily is very good at spotting apples in the kitchen."
+        ],
+        "answer_index": 1,
+        "explanation": "The idiom 'apple of my eye' is a figurative expression used to describe someone who is very precious or a favorite. The story links this to the Chinese phrase '掌上明珠' (pearl in the palm).",
+        "difficulty": "easy",
+        "source_module": "The Versatile Apple story"
+      },
+      {
+        "question": "The story mentions both an 'Apple watch' and an 'apple pie.' Why is 'Apple' capitalized in the first instance but not the second?",
+        "question_type": "multiple_choice",
+        "options": [
+          "Because Lily's friend is more important than her grandmother.",
+          "In English, all fruits must be capitalized when they are connected to technology.",
+          "The capitalized 'Apple' refers to a specific brand name, while the lowercase 'apple' refers to the fruit.",
+          "It was a stylistic choice to show that the watch was louder than the pie."
+        ],
+        "answer_index": 2,
+        "explanation": "Proper nouns, such as brand names (Apple Inc.), are capitalized in English. Common nouns like the fruit used in a pie are generally lowercase unless they start a sentence.",
+        "difficulty": "medium",
+        "source_module": "The Versatile Apple story"
+      },
+      {
+        "question": "Lily's snack was described as having a 'sweet crunch.' If the apple had been old and lost this quality, which word would best describe its texture?",
+        "question_type": "multiple_choice",
+        "options": [
+          "Vibrant",
+          "Mealy",
+          "Salty",
+          "Polished"
+        ],
+        "answer_index": 1,
+        "explanation": "While 'crisp' implies a fresh, firm texture that makes a sound when bitten, 'mealy' or 'mushy' are common terms for apples that have become soft and dry over time.",
+        "difficulty": "hard",
+        "source_module": "The Versatile Apple story"
+      },
+      {
+        "question": "True or False: The Chinese translation provided for 'apple of my eye' (掌上明珠) literally translates to 'apple of the hand' in English.",
+        "question_type": "true_false",
+        "options": [
+          "True",
+          "False"
+        ],
+        "answer_index": 1,
+        "explanation": "False. '掌上明珠' literally means 'a pearl in the palm.' This shows how different languages use different precious objects (apples vs. pearls) to express the same feeling of love.",
+        "difficulty": "medium",
+        "source_module": "The Versatile Apple story"
+      },
+      {
+        "question": "Based on the story's theme of 'versatility,' which of the following scenarios uses 'apple' in a way that relates to technology rather than food or affection?",
+        "question_type": "scenario_based",
+        "options": [
+          "Answering a call on a device with a glowing logo.",
+          "Picking out the reddest fruit for a teacher.",
+          "Helping a parent peel skins for a dessert.",
+          "Telling a younger sibling they are your favorite person."
+        ],
+        "answer_index": 0,
+        "explanation": "The story highlights that 'apple' can mean a snack, a person, or 'cutting-edge tech.' Answering a call on a branded device connects directly to the 'Apple watch' mentioned in the text.",
+        "difficulty": "easy",
+        "source_module": "The Versatile Apple story"
+      }
+    ],
+    "quiz_strategy": "This quiz evaluates the student's ability to distinguish between literal and figurative language as presented in the story. It tests their understanding of capitalization rules for brands vs. common nouns, challenges their vocabulary by asking for antonyms of sensory words used in the text, and requires them to compare cross-cultural idiomatic expressions introduced in the module."
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "title": "Newton's First Law Challenge",
+  "questions": [
+    {
+      "question": "In the 'The Stubbornness of Objects' module, it is mentioned that a hockey puck sliding on ice won't stop on its own in space. Why is this?",
+      "question_type": "multiple_choice",
+      "options": [
+        "Because space has zero gravity",
+        "Because there is no net external force like friction to change its motion",
+        "Because the puck has a high engine force",
+        "Because the puck's velocity is increasing"
+      ],
+      "answer_index": 1,
+      "explanation": "According to the Law of Inertia, an object in motion stays in motion at a constant velocity unless acted upon by a net external force. In space, the lack of friction (摩擦力) means there is no force to stop the puck's motion.",
+      "difficulty": "easy",
+      "source_module": "The Stubbornness of Objects"
+    },
+    {
+      "question": "Looking at 'The Net Force Equation', if we observe that an object's velocity (v) is constant and not changing, what must be true about ΣF?",
+      "question_type": "multiple_choice",
+      "options": [
+        "ΣF must be greater than zero",
+        "ΣF must be increasing",
+        "ΣF must be exactly zero",
+        "ΣF depends on the weight of the object"
+      ],
+      "answer_index": 2,
+      "explanation": "The formula ΣF = 0 ⮕ v = constant states that when the net force is zero, the velocity remains constant. If the velocity isn't changing, the sum of all external forces acting on that object must be zero.",
+      "difficulty": "medium",
+      "source_module": "The Net Force Equation"
+    },
+    {
+      "question": "A book is sitting perfectly still on a table. Based on the concept that objects 'want' to keep doing what they are doing, which statement is correct?",
+      "question_type": "true_false",
+      "options": [
+        "True",
+        "False"
+      ],
+      "answer_index": 0,
+      "explanation": "This is True. Newton's First Law applies to objects at rest just as much as objects in motion. The 'stubbornness' (inertia) of the book means it will remain at rest until a net external force, like a push, acts on it.",
+      "difficulty": "easy",
+      "source_module": "The Stubbornness of Objects"
+    },
+    {
+      "question": "Scenario: A spacecraft is traveling through a void at 10,000 m/s. If the engines are turned off and there is zero friction or gravity, what happens to the spacecraft's speed?",
+      "question_type": "scenario_based",
+      "options": [
+        "It will slowly come to a stop",
+        "It will continue at exactly 10,000 m/s indefinitely",
+        "It will immediately drop to zero",
+        "It will speed up because there is no air resistance"
+      ],
+      "answer_index": 1,
+      "explanation": "This applies the 'key insight' that forces change motion, they don't maintain it. Without friction or engine force, the net force ΣF is zero, so the velocity (v) remains a constant 10,000 m/s as per the Law of Inertia.",
+      "difficulty": "hard",
+      "source_module": "The Stubbornness of Objects"
+    },
+    {
+      "question": "If a car is moving at a constant speed of 60 km/h in a straight line, but the engine is clearly applying a forward force, how can ΣF = 0 be true?",
+      "question_type": "multiple_choice",
+      "options": [
+        "The engine force is not a real force",
+        "The car is actually accelerating slightly",
+        "Friction and air resistance are equal and opposite to the engine force",
+        "Newton's Law only applies to objects at rest"
+      ],
+      "answer_index": 2,
+      "explanation": "For velocity to be constant (v = constant), the net force (ΣF) must be zero. The forward force from the engine is balanced out by external forces like friction (摩擦力), resulting in a net force of zero.",
+      "difficulty": "hard",
+      "source_module": "The Net Force Equation"
+    }
+  ],
+  "quiz_strategy": "The questions transition from basic conceptual definitions found in 'The Stubbornness of Objects' to the mathematical application of the symbols in 'The Net Force Equation'. I included a scenario-based question to challenge the common misconception that a force is needed to maintain motion, specifically referencing the 'key insight' from the text module."
+}
