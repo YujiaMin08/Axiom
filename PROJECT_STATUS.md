@@ -112,12 +112,25 @@ Planner 会分配不同类型的模块，每种都需要对应的内容生成 AP
 - ⏳ 待接入：集成到主系统
 - **优先级**：🔴 最高（最常用）
 
-##### 2.2 故事叙事生成 API
+##### 2.2 故事叙事生成 API ✅ 已完成测试！
 **用于模块类型**：story
-- ❌ 实现 `generateStoryContent(topic, domain, context, characters?)`
-- ❌ 使用 Gemini 1.5 Pro（创意写作）
-- ❌ 输出：narrative_text, key_sentence, illustration_prompts[]
-- ❌ 支持多种叙事风格（科普、寓言、历史）
+- ✅ 实现 `generateStoryContent(topic, domain, modulePlan, context)`
+- ✅ 实现 `generateMultiWordFusionStory()` - 专门用于多词汇融合（PRD 场景3）
+- ✅ 使用 Gemini 2.5 Flash（创意写作质量出色）
+- ✅ 输出：narrative_text, key_sentence, illustration_prompts[], word_highlights, moral
+- ✅ 支持 4 种叙事风格（educational, allegory, historical, scenario）
+- ✅ 智能长度控制：
+  - 单词故事：50-120 词（简短有力）
+  - 多词融合：100-200 词（PRD 场景3）
+  - 场景学习：100-150 词（PRD 场景2）
+  - 科学/通识：150-300 词
+- ✅ 已测试验证：
+  - 单词故事 (apple) - 80词，文化深度
+  - 多词融合 (apple, telescope, jealousy, refund) - 200词，连贯流畅
+  - 场景学习 (咖啡店点咖啡) - 100词，真实对话
+  - 科学寓言 (光合作用碳原子旅程) - 280词，拟人化精彩
+- ✅ 提供专业的插图提示（2-4个场景描述）
+- ⏳ 待接入：集成到主系统
 - **优先级**：🟡 中等
 
 ##### 2.3 交互实验生成 API ⭐
@@ -571,7 +584,8 @@ canvases (画布)
 ✅ **统一交互协议** - AI 自动判断用户意图，无需手动选择  
 ✅ **优雅的 UI 设计** - 笔记本风格，极简交互，高级感十足  
 ✅ **Gemini 3 Flash Planner** - 智能模块规划，支持 27+ 种模块类型，100% 测试通过率  
-✅ **Gemini 2.5 Flash 内容生成器** - 基础文本内容生成，双语支持，质量出色  
+✅ **Gemini 2.5 Flash 文本生成器** - 基础文本内容生成，双语支持，质量出色  
+✅ **Gemini 2.5 Flash 故事生成器** - 4种故事类型，智能长度控制，拟人化叙事精彩  
 
 ---
 
