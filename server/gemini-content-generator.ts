@@ -131,16 +131,16 @@ User Preferences: ${JSON.stringify(context.user_preferences)}
 Generate COMPLETE and COMPREHENSIVE educational content for this module.
 
 Requirements:
-- Length: 400-1000 words (DO NOT truncate or stop mid-sentence)
+- Length: 200-400 words (keep it concise but complete)
 - Audience: G7-G12 students
 - Style: Engaging, clear, and accessible
 - Structure: Well-organized with Markdown headings and sections
 - Format: Use **bold** for key terms, bullet points for lists
 - Bilingual: Mix English and Chinese naturally (English terms with Chinese annotations)
-- Depth: Thorough coverage of the topic, not surface-level
+- Focus: Cover the essential points, avoid unnecessary elaboration
 - Completeness: Must have a clear beginning, middle, and end
 
-The content should align with the module's title and description, and fit naturally into the overall learning path. Make sure to FINISH the content completely - do not cut off mid-paragraph or mid-list.`;
+The content should align with the module's title and description. Be concise but thorough - quality over quantity. Make sure to FINISH the content completely - do not cut off mid-paragraph or mid-list.`;
 
   const responseSchema = {
     type: Type.OBJECT,

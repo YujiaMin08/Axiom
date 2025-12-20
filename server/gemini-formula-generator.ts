@@ -119,18 +119,18 @@ ${modulePlan.description || ''}
 Target Audience: ${audience}
 Derivation Level: ${derivation_level}
 
-Generate a comprehensive formula explanation for this module.
+Generate a CONCISE yet complete formula explanation for this module.
 
 Requirements:
 1. Present the main formula in LaTeX format
-2. Explain what the formula means in plain language
-3. Create a complete symbol table (every variable explained)
-4. ${include_proof ? `Provide step-by-step derivation (${derivation_level} level)` : 'Brief derivation overview'}
-5. Include 2-3 key insights about the formula
-6. Provide one worked example showing how to use the formula
+2. Explain what it means in plain language (80-150 words - be concise!)
+3. Create a complete symbol table (every variable explained briefly)
+4. ${include_proof ? `Provide 3-5 KEY derivation steps (${derivation_level} level) - focus on major logical moves, not every algebraic step` : 'Brief derivation overview'}
+5. Include 2-3 key insights (one sentence each)
+6. Provide one worked example (5-7 solution steps maximum)
 7. Use English for formulas and technical terms, Chinese for explanations
 
-Make the mathematics accessible and engaging, not intimidating.`;
+CRITICAL: Keep everything CONCISE. Students are exploring multiple modules, so each piece should be digestible. Quality over verbosity.`;
 
   const responseSchema = {
     type: Type.OBJECT,
@@ -142,7 +142,7 @@ Make the mathematics accessible and engaging, not intimidating.`;
       },
       formula_explanation: {
         type: Type.STRING,
-        description: "What the formula means in plain language (100-200 words)"
+        description: "What the formula means in plain language. CONCISE: 80-150 words maximum. Focus on the essential meaning."
       },
       symbol_table: {
         type: Type.ARRAY,
@@ -162,12 +162,12 @@ Make the mathematics accessible and engaging, not intimidating.`;
           type: Type.OBJECT,
           properties: {
             step_number: { type: Type.NUMBER },
-            description: { type: Type.STRING },
+            description: { type: Type.STRING, description: "Brief step description (10-20 words)" },
             formula: { type: Type.STRING },
-            explanation: { type: Type.STRING }
+            explanation: { type: Type.STRING, description: "Concise explanation (20-40 words)" }
           }
         },
-        description: "Step-by-step derivation process"
+        description: "Step-by-step derivation process. Limit to 3-5 key steps. Each explanation should be concise."
       },
       key_insights: {
         type: Type.ARRAY,
