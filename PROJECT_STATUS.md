@@ -153,12 +153,24 @@ Planner 会分配不同类型的模块，每种都需要对应的内容生成 AP
 - ⏳ 待接入：集成到主系统
 - **优先级**：🔴 最高（PRD 核心特性）
 
-##### 2.4 数学公式生成 API
+##### 2.4 数学公式生成 API ✅ 已完成测试！
 **用于模块类型**：formula, perspective_mathematics
-- ❌ 实现 `generateFormulaContent(topic, concept, derivation_level)`
-- ❌ 使用 Gemini 1.5 Pro
-- ❌ 输出：LaTeX 公式、逐步推导、符号对应表
-- ❌ 支持可折叠的推导步骤
+- ✅ 实现 `generateFormulaContent(topic, domain, modulePlan, context)`
+- ✅ 使用 Gemini 2.5 Flash
+- ✅ 输出：
+  - LaTeX 公式
+  - 中文解释（100-200字）
+  - 完整符号对应表
+  - 渐进式推导步骤（3-5步）
+  - 实际应用示例（带详细求解）
+  - 关键洞察
+- ✅ 支持可调推导级别（simple/detailed/rigorous）
+- ✅ 双语支持（LaTeX英文，解释中文）
+- ✅ 已测试验证：
+  - 勾股定理（a² + b² = c²）- 3步推导，电视支架应用
+- ⚠️ 已知限制：复杂推导（>7步）可能被截断
+- 💡 渐进策略：用户追问详细步骤时再补充生成
+- ⏳ 待接入：集成到主系统
 - **优先级**：🟡 中等
 
 ##### 2.5 测验生成 API
@@ -591,6 +603,7 @@ canvases (画布)
 ✅ **Gemini 2.5 Flash 文本生成器** - 基础文本内容生成，双语支持，质量出色  
 ✅ **Gemini 2.5 Flash 故事生成器** - 4种故事类型，智能长度控制，拟人化叙事精彩  
 ✅ **Gemini 3 Flash 交互应用生成器** - 完整HTML生成，4个领域验证通过，Predict→Manipulate→Observe循环  
+✅ **Gemini 2.5 Flash 公式生成器** - LaTeX公式、渐进式推导、符号表、应用示例，支持渐进披露  
 
 ---
 
