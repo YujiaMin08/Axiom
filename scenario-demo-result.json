@@ -1,0 +1,120 @@
+{
+  "title": "Ordering Coffee at a Local Cafe",
+  "scenario_type": "roleplay",
+  "setting": {
+    "context": "You are at a busy neighborhood cafe in the morning. You want to order a drink and a small snack before starting your day.",
+    "location": "The Daily Grind Cafe",
+    "other_characters": [
+      "Alex the Barista"
+    ],
+    "your_role": "A customer looking for a caffeine fix"
+  },
+  "dialogue_sequence": [
+    {
+      "step": 1,
+      "your_options": [
+        {
+          "text": "Hello! Could I have a medium latte, please?",
+          "tone": "Polite and formal",
+          "vocabulary_highlighted": [
+            "Could I have",
+            "latte",
+            "please"
+          ]
+        },
+        {
+          "text": "I want a coffee. Large.",
+          "tone": "Blunt",
+          "vocabulary_highlighted": [
+            "I want"
+          ]
+        },
+        {
+          "text": "Hi! Can I get a small americano, please?",
+          "tone": "Friendly and casual",
+          "vocabulary_highlighted": [
+            "Can I get",
+            "americano"
+          ]
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "your_options": [
+        {
+          "text": "With oat milk, please. No sugar.",
+          "tone": "Direct and polite",
+          "vocabulary_highlighted": [
+            "oat milk",
+            "sugar"
+          ]
+        },
+        {
+          "text": "I don't like milk. Just black.",
+          "tone": "Slightly negative",
+          "vocabulary_highlighted": [
+            "black"
+          ]
+        },
+        {
+          "text": "Regular milk is fine, thanks!",
+          "tone": "Cheerful",
+          "vocabulary_highlighted": [
+            "regular milk"
+          ]
+        }
+      ]
+    },
+    {
+      "step": 3,
+      "your_options": [
+        {
+          "text": "To go, please. And I'll take that blueberry muffin too.",
+          "tone": "Polite",
+          "vocabulary_highlighted": [
+            "To go",
+            "muffin"
+          ]
+        },
+        {
+          "text": "I'll drink it here. No food.",
+          "tone": "Brief",
+          "vocabulary_highlighted": [
+            "here"
+          ]
+        },
+        {
+          "text": "For here, please. Actually, do you have any croissants left?",
+          "tone": "Inquisitive",
+          "vocabulary_highlighted": [
+            "For here",
+            "croissants"
+          ]
+        }
+      ]
+    }
+  ],
+  "key_vocabulary": [
+    {
+      "word": "Latte / Americano / Espresso / Cappuccino"
+    },
+    {
+      "word": "To go / For here"
+    },
+    {
+      "word": "Could I have / Can I get"
+    },
+    {
+      "word": "Skim / Whole / Oat / Soy milk"
+    },
+    {
+      "word": "Keep the change"
+    }
+  ],
+  "cultural_notes": [
+    "In many English-speaking countries, it is common to say 'How are you?' as a greeting, but you don't need to give a long answer.",
+    "Tipping at coffee shops is often optional but appreciated, usually done by rounding up the change or adding a small amount to the card payment.",
+    "Specifying 'to go' or 'for here' is essential as it determines if you get a paper cup or a ceramic mug."
+  ]
+}
