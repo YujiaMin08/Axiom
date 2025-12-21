@@ -11,6 +11,8 @@
 [![Node.js](https://img.shields.io/badge/Node.js-20.x-green)](https://nodejs.org/)
 [![Gemini AI](https://img.shields.io/badge/Gemini-2.0%20Flash-orange)](https://ai.google.dev/)
 
+English | [简体中文](README_CN.md)
+
 </div>
 
 ---
