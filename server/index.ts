@@ -4,6 +4,8 @@ import { initDatabase } from './db';
 import canvasesRouter from './routes/canvases';
 import modulesRouter from './routes/modules';
 import interactRouter from './routes/interact';
+import asyncStatusRouter from './routes/async-status';
+import scenarioChatRouter from './routes/scenario-chat';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -32,6 +34,8 @@ initDatabase();
 app.use('/api/canvases', canvasesRouter);
 app.use('/api/modules', modulesRouter);
 app.use('/api/interact', interactRouter);
+app.use('/api/async', asyncStatusRouter);
+app.use('/api/scenario', scenarioChatRouter);
 
 // 健康检查
 app.get('/api/health', (req, res) => {
@@ -50,6 +54,10 @@ app.listen(PORT, () => {
   console.log(`   POST   /api/modules/:id/edit  - 编辑模块`);
   console.log(`   GET    /api/modules/:id/versions - 获取模块版本历史`);
   console.log(`   DELETE /api/modules/:id        - 删除模块`);
+  console.log(`   GET    /api/async/status       - 异步生成队列状态`);
+  console.log(`   POST   /api/scenario/start    - 开始实时对话场景`);
+  console.log(`   POST   /api/scenario/continue - 继续实时对话`);
+  console.log(`   POST   /api/canvases/test     - 创建测试 Canvas（真实卡片预览）`);
 });
 
 export default app;

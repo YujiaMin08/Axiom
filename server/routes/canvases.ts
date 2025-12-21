@@ -1,7 +1,12 @@
 import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { canvasDB, moduleDB, versionDB } from '../db';
-import { generateModulePlan, generateModuleContent, planNewModule } from '../planner';
+// 导入简化版协调器
+import { 
+  generateModulePlan, 
+  generateModuleContent as generateContentWithAI, 
+  planNewModule 
+} from '../content-generator-orchestrator-simple.js';
 import { 
   CreateCanvasRequest, 
   EditModuleRequest, 
@@ -13,51 +18,197 @@ import {
 const router = Router();
 
 /**
+ * POST /canvases/test
+ * 创建测试 Canvas（只包含单个模块）
+ * 注意：必须在 /:id 路由之前定义
+ */
+router.post('/test', async (req, res) => {
+  try {
+    const { topic, domain, moduleType } = req.body;
+
+    if (!topic || !domain || !moduleType) {
+      return res.status(400).json({ 
+        error: '缺少必要参数',
+        required: ['topic', 'domain', 'moduleType']
+      });
+    }
+
+    console.log(`🧪 创建测试 Canvas: ${moduleType} | 主题: ${topic}`);
+
+    // 1. 创建 Canvas
+    const canvasId = uuidv4();
+    const canvasTitle = `[TEST] ${topic} - ${moduleType}`;
+    canvasDB.create(canvasId, canvasTitle, domain);
+
+    // 2. 创建单个模块
+    const moduleId = uuidv4();
+    moduleDB.create(moduleId, canvasId, moduleType, 0);
+
+    try {
+      console.log(`  🎨 生成模块内容...`);
+      
+      // 生成内容（支持异步媒体）
+      const content = await generateContentWithAI({
+        topic,
+        domain,
+        moduleType,
+        moduleId  // 传递 moduleId 支持异步生成
+      });
+
+      // 创建 ModuleVersion
+      const versionId = uuidv4();
+      versionDB.create(versionId, moduleId, `测试: ${moduleType}`, JSON.stringify(content));
+
+      // 更新模块状态为 ready
+      moduleDB.updateStatus(moduleId, 'ready');
+      
+      console.log(`  ✅ 测试模块创建成功`);
+
+    } catch (error) {
+      console.error(`  ❌ 模块生成失败:`, error);
+      
+      // 创建错误内容
+      const errorContent = {
+        type: 'text',
+        title: '生成失败',
+        body: `模块生成遇到错误：\n\n${(error as Error).message}\n\n请重试或检查参数。`
+      };
+      
+      const versionId = uuidv4();
+      versionDB.create(versionId, moduleId, '生成失败', JSON.stringify(errorContent));
+      moduleDB.updateStatus(moduleId, 'ready');
+    }
+
+    // 3. 返回 Canvas 响应（与正常 Canvas 格式一致）
+    const canvas = canvasDB.findById(canvasId);
+    const module = moduleDB.findById(moduleId);
+    const version = versionDB.findLatestByModuleId(moduleId);
+
+    res.json({
+      canvas,
+      modules: [
+        {
+          module,
+          current_version: {
+            ...version,
+            content_json: JSON.parse((version as any).content_json)
+          }
+        }
+      ]
+    });
+
+  } catch (error) {
+    console.error('❌ 创建测试 Canvas 失败:', error);
+    res.status(500).json({ 
+      error: '创建失败',
+      details: (error as Error).message 
+    });
+  }
+});
+
+/**
  * POST /canvases
  * 创建一个新的 Canvas + 生成 2-3 个初始模块
  */
 router.post('/', async (req, res) => {
   try {
-    const { topic, domain } = req.body as CreateCanvasRequest;
+    const { topic, domain, language } = req.body as CreateCanvasRequest & { language?: 'en' | 'zh' };
 
     if (!topic || !domain) {
       return res.status(400).json({ error: 'topic 和 domain 是必需的' });
     }
 
+    // 默认语言为英文，Language Arts 使用中文（双语）
+    const contentLanguage = language || 'en';
+    console.log(`🌐 内容语言: ${contentLanguage}`);
+
     // 1. 创建 Canvas
     const canvasId = uuidv4();
     canvasDB.create(canvasId, topic, domain);
 
-    // 2. 使用假 Planner 生成模块计划
-    const modulePlan = generateModulePlan(topic, domain);
-
-    // 3. 为每个计划创建 Module 和初始 Version
-    for (let i = 0; i < modulePlan.length; i++) {
-      const plan = modulePlan[i];
-      const moduleId = uuidv4();
-
-      // 创建 Module
-      moduleDB.create(moduleId, canvasId, plan.type, i);
-
-      // 生成内容
-      const content = generateModuleContent(topic, domain, plan.type);
-
-      // 创建 ModuleVersion
-      const versionId = uuidv4();
-      versionDB.create(
-        versionId,
-        moduleId,
-        `初始生成: ${plan.title}`,
-        JSON.stringify(content)
-      );
-
-      // 更新 Module 状态为 ready
-      moduleDB.updateStatus(moduleId, 'ready');
+    // 2. 使用真实的 Gemini Planner 生成模块计划
+    console.log(`🚀 开始生成 Canvas: "${topic}" (${domain})`);
+    let modulePlan;
+    try {
+      modulePlan = await generateModulePlan(topic, domain, contentLanguage);
+      console.log(`📋 Planner 返回了 ${modulePlan.length} 个模块`);
+    } catch (error) {
+      console.error('❌ Planner 生成失败:', error);
+      return res.status(500).json({ 
+        error: '模块规划失败', 
+        details: (error as Error).message 
+      });
     }
 
+    // 3. 为每个计划创建 Module 和初始 Version（并行生成以提高速度）
+    const modulePromises = modulePlan.map(async (plan, i) => {
+      const moduleId = uuidv4();
+
+      // 创建 Module（状态：generating）
+      moduleDB.create(moduleId, canvasId, plan.type, i);
+
+      try {
+        console.log(`  🎨 [${i + 1}/${modulePlan.length}] 生成 ${plan.type}: ${plan.title}`);
+        
+        // 使用 AI 生成内容（传递 moduleId 以支持异步生成）
+        const content = await generateContentWithAI({
+          topic,
+          domain,
+          moduleType: plan.type,
+          moduleId,  // 传递 moduleId，用于异步更新
+          language: contentLanguage  // 传递语言设置
+        });
+
+        // 创建 ModuleVersion
+        const versionId = uuidv4();
+        versionDB.create(
+          versionId,
+          moduleId,
+          `初始生成: ${plan.title}`,
+          JSON.stringify(content)
+        );
+
+        // 更新 Module 状态为 ready
+        moduleDB.updateStatus(moduleId, 'ready');
+        console.log(`  ✅ [${i + 1}/${modulePlan.length}] ${plan.type} 生成完成`);
+
+      } catch (error) {
+        console.error(`  ❌ [${i + 1}/${modulePlan.length}] ${plan.type} 生成失败:`, error);
+        
+        // 生成失败，创建错误提示内容
+        const errorContent = {
+          type: 'text',
+          title: plan.title,
+          body: `内容生成失败，请稍后重试。\n\nError: ${(error as Error).message}`
+        };
+        
+        const versionId = uuidv4();
+        versionDB.create(
+          versionId,
+          moduleId,
+          `生成失败: ${plan.title}`,
+          JSON.stringify(errorContent)
+        );
+        
+        moduleDB.updateStatus(moduleId, 'ready'); // 仍标记为 ready，但内容是错误提示
+      }
+    });
+
+    // 等待所有模块生成完成
+    await Promise.all(modulePromises);
+    console.log(`✅ Canvas "${topic}" 生成完成！`)
+
     // 4. 返回完整的 Canvas 数据
-    const canvasData = buildCanvasResponse(canvasId);
-    res.json(canvasData);
+    try {
+      const canvasData = buildCanvasResponse(canvasId);
+      res.json(canvasData);
+    } catch (error) {
+      console.error('❌ 构建响应失败:', error);
+      return res.status(500).json({ 
+        error: '构建响应失败', 
+        details: (error as Error).message 
+      });
+    }
 
   } catch (error) {
     console.error('创建 Canvas 错误:', error);
@@ -123,25 +274,45 @@ router.post('/:id/expand', async (req, res) => {
 
     // 使用 Planner 决定添加什么类型的模块
     const plan = planNewModule(prompt, (canvas as any).domain);
+    console.log(`🚀 扩展 Canvas: 添加 ${plan.type} 模块`);
 
     // 创建新模块
     const moduleId = uuidv4();
     moduleDB.create(moduleId, id, plan.type, newOrderIndex);
 
-    // 生成内容
-    const content = generateModuleContent(
-      (canvas as any).title,
-      (canvas as any).domain,
-      plan.type,
-      prompt
-    );
+    try {
+      // 使用 AI 生成内容（如果是 Quiz，传入之前的模块作为上下文）
+      const content = await generateContentWithAI({
+        topic: (canvas as any).title,
+        domain: (canvas as any).domain,
+        moduleType: plan.type,
+        userPrompt: prompt,
+        previousModules: plan.type.includes('quiz') ? existingModules : undefined,
+        moduleId  // 传递 moduleId，用于异步更新
+      });
 
-    // 创建版本
-    const versionId = uuidv4();
-    versionDB.create(versionId, moduleId, prompt, JSON.stringify(content));
+      // 创建版本
+      const versionId = uuidv4();
+      versionDB.create(versionId, moduleId, prompt, JSON.stringify(content));
 
-    // 更新状态
-    moduleDB.updateStatus(moduleId, 'ready');
+      // 更新状态
+      moduleDB.updateStatus(moduleId, 'ready');
+      console.log(`✅ ${plan.type} 模块生成完成`);
+
+    } catch (error) {
+      console.error(`❌ ${plan.type} 模块生成失败:`, error);
+      
+      // 降级：创建错误提示
+      const errorContent = {
+        type: 'text',
+        title: plan.title,
+        body: `内容生成失败，请稍后重试。`
+      };
+      
+      const versionId = uuidv4();
+      versionDB.create(versionId, moduleId, prompt, JSON.stringify(errorContent));
+      moduleDB.updateStatus(moduleId, 'ready');
+    }
 
     // 返回更新后的 Canvas
     const canvasData = buildCanvasResponse(id);
@@ -180,26 +351,48 @@ router.post('/:id/new', async (req, res) => {
     canvasDB.create(newCanvasId, new_topic, domain);
 
     // 生成新模块
-    const modulePlan = generateModulePlan(new_topic, domain);
+    console.log(`🚀 创建新 Canvas: "${new_topic}"`);
+    const modulePlan = await generateModulePlan(new_topic, domain);
 
-    for (let i = 0; i < modulePlan.length; i++) {
-      const plan = modulePlan[i];
+    // 并行生成所有模块
+    const modulePromises = modulePlan.map(async (plan, i) => {
       const moduleId = uuidv4();
-
       moduleDB.create(moduleId, newCanvasId, plan.type, i);
 
-      const content = generateModuleContent(new_topic, domain, plan.type);
+      try {
+        const content = await generateContentWithAI({
+          topic: new_topic,
+          domain,
+          moduleType: plan.type,
+          moduleId  // 传递 moduleId，用于异步更新
+        });
 
-      const versionId = uuidv4();
-      versionDB.create(
-        versionId,
-        moduleId,
-        `初始生成: ${plan.title}`,
-        JSON.stringify(content)
-      );
+        const versionId = uuidv4();
+        versionDB.create(
+          versionId,
+          moduleId,
+          `初始生成: ${plan.title}`,
+          JSON.stringify(content)
+        );
 
-      moduleDB.updateStatus(moduleId, 'ready');
-    }
+        moduleDB.updateStatus(moduleId, 'ready');
+      } catch (error) {
+        console.error(`❌ 模块生成失败:`, error);
+        
+        const errorContent = {
+          type: 'text',
+          title: plan.title,
+          body: '内容生成失败'
+        };
+        
+        const versionId = uuidv4();
+        versionDB.create(versionId, moduleId, `初始生成: ${plan.title}`, JSON.stringify(errorContent));
+        moduleDB.updateStatus(moduleId, 'ready');
+      }
+    });
+
+    await Promise.all(modulePromises);
+    console.log(`✅ 新 Canvas 生成完成`)
 
     // 返回新 Canvas
     const canvasData = buildCanvasResponse(newCanvasId);

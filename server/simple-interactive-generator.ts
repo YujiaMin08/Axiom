@@ -5,7 +5,8 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyAw4tkBsTJYW0kYhkoGMX5RBCyt_EzJpPI';
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 const CODE_REGION_OPENER = '```html';
 const CODE_REGION_CLOSER = '```';
@@ -99,20 +100,43 @@ export async function generateSimpleInteractiveApp(
   const learning_goal = context?.learning_goal || 
     `Understand ${topic} through interactive exploration`;
 
+  // 根据领域调整 prompt
+  const domainSpecificGuidance = domain === 'LANGUAGE' ? `
+  
+IMPORTANT: This is a LANGUAGE learning topic. Design an interactive language learning app, NOT a scientific experiment.
+
+For LANGUAGE domain, the app should focus on:
+- Vocabulary practice and exploration
+- Word usage in different contexts
+- Interactive dialogues or scenarios
+- Language patterns and structures
+- Pronunciation or spelling practice (if applicable)
+
+Examples of LANGUAGE interactive apps:
+- Word builder: Adjust word parts to form different words
+- Context explorer: See how the word changes meaning in different sentences
+- Dialogue builder: Construct conversations using the word
+- Usage frequency: Explore how the word is used in different contexts
+- Etymology explorer: See word evolution and related words
+
+DO NOT create scientific experiments with sliders for physical parameters.
+DO create language-focused interactive experiences.` : '';
+
   // 第一步：生成 spec
   const specPrompt = `Topic: "${topic}"
 Domain: ${domain}
 Module: "${modulePlan.title}"
 ${modulePlan.description ? `Description: ${modulePlan.description}` : ''}
 Learning Goal: ${learning_goal}
+${domainSpecificGuidance}
 
 Write a detailed spec for an interactive web app to teach this concept.
 
 Follow the example format shown above. Be specific about:
-- What parameters the user can adjust (sliders/toggles/inputs)
+- What parameters the user can adjust (sliders/toggles/inputs/word choices)
 - What visual feedback they see in real-time
 - What educational explanations are shown
-- What quiz questions verify understanding
+- What quiz questions verify understanding (if applicable)
 
 Make the spec clear and implementable.`;
 

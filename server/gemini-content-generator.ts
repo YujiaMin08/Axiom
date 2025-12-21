@@ -5,7 +5,8 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyAw4tkBsTJYW0kYhkoGMX5RBCyt_EzJpPI';
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 /**
  * 文本内容输出结构
@@ -43,6 +44,7 @@ export async function generateTextContent(
     other_modules?: ModulePlan[];
     user_preferences?: any;
     previous_content?: string;
+    user_refinement?: string;
   }
 ): Promise<TextContentOutput> {
   
@@ -126,6 +128,12 @@ ${context.other_modules.map(m => `- ${m.title} (${m.type})`).join('\n')}
 
 ${context?.user_preferences ? `
 User Preferences: ${JSON.stringify(context.user_preferences)}
+` : ''}
+
+${context?.user_refinement ? `
+**USER'S REFINEMENT REQUEST**: ${context.user_refinement}
+
+IMPORTANT: This is a user-requested modification. Please regenerate the content according to their specific request above while maintaining the quality and structure standards.
 ` : ''}
 
 Generate COMPLETE and COMPREHENSIVE educational content for this module.

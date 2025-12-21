@@ -5,7 +5,8 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyAw4tkBsTJYW0kYhkoGMX5RBCyt_EzJpPI';
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 /**
  * 公式内容输出结构

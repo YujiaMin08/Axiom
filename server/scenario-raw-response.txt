@@ -1,0 +1,97 @@
+{
+  "title": "Buying Fruit at the Market",
+  "scenario_type": "roleplay",
+  "setting": {
+    "context": "You are at a local farmers market to buy some fresh fruit for a snack.",
+    "location": "Farmers Market",
+    "other_characters": [
+      "Vendor"
+    ],
+    "your_role": "Customer"
+  },
+  "dialogue_sequence": [
+    {
+      "step": 1,
+      "your_options": [
+        {
+          "text": "Hello! I want an apple, please.",
+          "tone": "Polite",
+          "vocabulary_highlighted": [
+            "apple",
+            "please"
+          ]
+          },
+        {
+          "text": "Give me apple.",
+          "tone": "Brusque",
+          "vocabulary_highlighted": [
+            "apple"
+          ]
+          },
+        {
+          "text": "Hi! Do you have any apples today?",
+          "tone": "Friendly",
+          "vocabulary_highlighted": [
+            "apples"
+          ]
+          }
+      ]
+      },
+    {
+      "step": 2,
+      "your_options": [
+        {
+          "text": "I like the red apple.",
+          "tone": "Simple",
+          "vocabulary_highlighted": [
+            "red",
+            "apple"
+          ]
+          },
+        {
+          "text": "The green apple looks good.",
+          "tone": "Descriptive",
+          "vocabulary_highlighted": [
+            "green",
+            "apple"
+          ]
+          },
+        {
+          "text": "That one.",
+          "tone": "Vague",
+          "vocabulary_highlighted": []
+          }
+      ]
+      },
+    {
+      "step": 3,
+      "your_options": [
+        {
+          "text": "How much for one apple?",
+          "tone": "Inquiry",
+          "vocabulary_highlighted": [
+            "How much",
+            "apple"
+          ]
+          },
+        {
+          "text": "One apple price?",
+          "tone": "Basic",
+          "vocabulary_highlighted": [
+            "apple",
+            "price"
+          ]
+          },
+        {
+          "text": "Here is my money.",
+          "tone": "Direct",
+          "vocabulary_highlighted": [
+            "money"
+          ]
+          }
+      ]
+      }
+  ],
+  "key_vocabulary": [
+    {
+      "word": "Apple shadow-box-123-placeholder-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word-123-shadow-box-apple-word

@@ -5,7 +5,8 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyAw4tkBsTJYW0kYhkoGMX5RBCyt_EzJpPI';
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 /**
  * 场景输出结构
@@ -95,11 +96,17 @@ Create an interactive language learning scenario.
 
 Requirements:
 1. Set the scene (location, context, your role)
-2. Design 3-5 dialogue interaction steps
-3. For each step, provide 3-4 response options with varying appropriateness
-4. Provide clear feedback for each option
-5. Extract 5-8 key vocabulary words used in the scenario
-6. Include cultural notes if relevant
+2. Design 3-4 dialogue interaction steps (keep it concise)
+3. For each step, provide 3 response options with varying appropriateness
+4. Provide BRIEF feedback for each option (max 1-2 sentences)
+5. Extract 5-6 key vocabulary words used in the scenario
+6. Include 1-2 cultural notes if relevant
+
+IMPORTANT:
+- Keep feedback text SHORT and simple
+- Avoid complex nested structures
+- Use simple, clear language
+- Do NOT use quotes or apostrophes in feedback text - use simpler phrasing instead
 
 Make it practical, engaging, and educational. The learner should feel like they're practicing real communication.`;
 
@@ -173,10 +180,24 @@ Make it practical, engaging, and educational. The learner should feel like they'
       responseSchema,
       temperature: 0.7,
       maxOutputTokens: 8192,
-      thinkingConfig: { thinkingLevel: 'medium' }
+      thinkingConfig: { thinkingLevel: 'minimal' }  // 降低 thinking level 避免过长输出
     },
   });
 
-  return JSON.parse(response.text);
+  try {
+    return JSON.parse(response.text);
+  } catch (parseError) {
+    console.error('❌ Scenario JSON 解析失败');
+    console.error('响应长度:', response.text.length);
+    console.error('前 200 字符:', response.text.substring(0, 200));
+    console.error('后 200 字符:', response.text.substring(response.text.length - 200));
+    
+    // 保存原始响应用于调试
+    const fs = await import('fs');
+    fs.writeFileSync('./scenario-raw-response.txt', response.text, 'utf-8');
+    console.error('已保存到: scenario-raw-response.txt');
+    
+    throw parseError;
+  }
 }
 

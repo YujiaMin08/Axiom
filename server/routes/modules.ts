@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { moduleDB, versionDB, canvasDB } from '../db';
-import { generateModuleContent } from '../planner';
+// 导入简化版协调器
+import { generateModuleContent as generateContentWithAI } from '../content-generator-orchestrator-simple.js';
 import { EditModuleRequest } from '../types';
 
 const router = Router();
@@ -34,20 +35,40 @@ router.post('/:id/edit', async (req, res) => {
     // 3. 更新模块状态为 generating
     moduleDB.updateStatus(id, 'generating');
 
-    // 4. 生成新内容
-    const content = generateModuleContent(
-      canvas.title,
-      canvas.domain,
-      module.type,
-      prompt
-    );
+    // 4. 使用 AI 生成新内容
+    try {
+      console.log(`🔄 编辑模块: ${module.type}`);
+      
+      const content = await generateContentWithAI({
+        topic: canvas.title,
+        domain: canvas.domain,
+        moduleType: module.type,
+        userPrompt: prompt,
+        moduleId: id  // 传递 moduleId，用于异步更新
+      });
 
-    // 5. 创建新的 ModuleVersion
-    const versionId = uuidv4();
-    versionDB.create(versionId, id, prompt, JSON.stringify(content));
+      // 5. 创建新的 ModuleVersion
+      const versionId = uuidv4();
+      versionDB.create(versionId, id, prompt, JSON.stringify(content));
 
-    // 6. 更新模块状态为 ready
-    moduleDB.updateStatus(id, 'ready');
+      // 6. 更新模块状态为 ready
+      moduleDB.updateStatus(id, 'ready');
+      console.log(`✅ 模块编辑完成`);
+      
+    } catch (error) {
+      console.error(`❌ 模块编辑失败:`, error);
+      
+      // 创建错误内容
+      const errorContent = {
+        type: 'text',
+        title: 'Error',
+        body: '内容生成失败，请稍后重试'
+      };
+      
+      const versionId = uuidv4();
+      versionDB.create(versionId, id, prompt, JSON.stringify(errorContent));
+      moduleDB.updateStatus(id, 'ready');
+    }
 
     // 7. 返回新版本
     const newVersion = versionDB.findLatestByModuleId(id) as any;

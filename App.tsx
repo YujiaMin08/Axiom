@@ -1,22 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { generateEducationalContent } from './geminiService';
 import { LearningCategory } from './types';
 import DynamicBackground from './components/DynamicBackground';
-import LanguageModule from './components/LanguageModule';
-import ScienceModule from './components/ScienceModule';
 import CanvasPage from './components/CanvasPage';
 import { createCanvas } from './apiService';
+import NotebookSidebar from './components/NotebookSidebar';
+import { getContentLanguage } from './utils/languageSettings';
 
 const App: React.FC = () => {
   const [topic, setTopic] = useState('');
   const [category, setCategory] = useState<LearningCategory>(LearningCategory.LANGUAGE);
   const [isLoading, setIsLoading] = useState(false);
-  const [content, setContent] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   
   // Canvas 模式状态
   const [canvasMode, setCanvasMode] = useState(false);
   const [canvasId, setCanvasId] = useState<string | null>(null);
+  
+  // Sidebar 状态
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // 重置输入框高度当分类改变时
+  useEffect(() => {
+    const textarea = document.querySelector('textarea');
+    if (textarea) {
+      textarea.style.height = 'auto';
+    }
+  }, [category]);
+
+  // 检查 URL 参数，支持直接跳转到指定 Canvas
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const canvasParam = params.get('canvas');
+    
+    if (canvasParam) {
+      console.log('🔗 检测到 Canvas ID:', canvasParam);
+      setCanvasId(canvasParam);
+      setCanvasMode(true);
+    }
+  }, []);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,19 +54,22 @@ const App: React.FC = () => {
         [LearningCategory.DIALOGUE]: 'LIBERAL_ARTS'
       };
       
-      const canvasData = await createCanvas(topic, domainMap[category]);
+      const domain = domainMap[category];
+      const language = getContentLanguage(domain);
+      
+      const canvasData = await createCanvas(topic, domain, language);
       setCanvasId(canvasData.canvas.id);
       setCanvasMode(true);
-    } catch (err) {
-      console.error(err);
-      setError("The Oracle encountered an error in deduction. Please try another query.");
+    } catch (err: any) {
+      console.error('创建 Canvas 失败:', err);
+      const errorMessage = err?.response?.data?.details || err?.message || 'Unknown error';
+      setError(`The Oracle encountered an error: ${errorMessage}. Please try another query.`);
     } finally {
       setIsLoading(false);
     }
   };
 
   const reset = () => {
-    setContent(null);
     setTopic('');
     setCanvasMode(false);
     setCanvasId(null);
@@ -55,18 +79,50 @@ const App: React.FC = () => {
     <div className="min-h-screen relative selection:bg-stone-900 selection:text-stone-100">
       <DynamicBackground category={category} />
       
+      {/* 笔记本侧边栏 */}
+      <NotebookSidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        currentCanvasId={canvasId}
+        onSelectCanvas={(id) => {
+          setCanvasId(id);
+          setCanvasMode(true);
+          setIsSidebarOpen(false);
+        }}
+      />
+      
       {/* 全局导航栏 - 统一且极简 */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-12 py-8 flex justify-between items-center">
-        <div 
-          className="cursor-pointer group" 
-          onClick={reset}
-        >
-          <span className="text-3xl font-bold tracking-tighter playfair text-stone-900/80 group-hover:text-stone-900 transition-colors">axiom</span>
+      <nav className={`fixed top-0 left-0 right-0 z-50 px-12 py-8 flex justify-between items-center pointer-events-none transition-opacity duration-500 ${
+        isSidebarOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
+      }`}>
+        <div className="flex items-center space-x-6 pointer-events-auto">
+          {/* 菜单按钮 - 只在侧边栏关闭时显示 */}
+          {!isSidebarOpen && (
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="p-2 hover:bg-white/50 rounded-full transition-colors group"
+              title="Open Library"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-stone-600 group-hover:text-stone-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h7" />
+              </svg>
+            </button>
+          )}
+
+          {/* axiom 标题 - 只在侧边栏关闭时显示 */}
+          {!isSidebarOpen && (
+            <div 
+              className="cursor-pointer group" 
+              onClick={reset}
+            >
+              <span className="text-3xl font-bold tracking-tighter playfair text-stone-900/80 group-hover:text-stone-900 transition-colors">axiom</span>
+            </div>
+          )}
         </div>
 
         {/* 只有在 Canvas 模式下才显示的辅助操作 */}
         {canvasMode && (
-          <div className="animate-in fade-in slide-in-from-right-2 duration-500">
+          <div className="animate-in fade-in slide-in-from-right-2 duration-500 pointer-events-auto">
             <button 
               onClick={reset}
               className="text-[10px] uppercase tracking-[0.2em] text-stone-400 hover:text-stone-900 transition-colors py-2 px-4 border border-transparent hover:border-stone-200 rounded-full"
@@ -75,7 +131,7 @@ const App: React.FC = () => {
             </button>
           </div>
         )}
-        </nav>
+      </nav>
 
       <main className="pt-24 min-h-screen z-10 relative">
         {canvasMode && canvasId ? (
@@ -85,7 +141,7 @@ const App: React.FC = () => {
             onReset={reset} 
             onCanvasChange={setCanvasId}
           />
-        ) : !content ? (
+        ) : (
           /* Landing State */
           <div className="flex flex-col items-center justify-center min-h-[80vh] px-6 text-center">
             <div className="max-w-3xl space-y-12 w-full">
@@ -100,12 +156,30 @@ const App: React.FC = () => {
 
               <div className="space-y-10 max-w-xl mx-auto w-full">
                 <form onSubmit={handleSearch} className="relative group w-full">
-                  <input 
-                    type="text"
+                  <textarea
                     value={topic}
-                    onChange={(e) => setTopic(e.target.value)}
-                    placeholder="e.g. Entropy, Renaissance, or Apple..."
-                    className="w-full bg-transparent border-b border-stone-300 py-4 px-2 text-2xl serif italic focus:outline-none focus:border-stone-900 transition-colors placeholder:text-stone-300 text-center"
+                    onChange={(e) => {
+                      setTopic(e.target.value);
+                      // Auto-resize
+                      e.target.style.height = 'auto';
+                      e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px';
+                    }}
+                    placeholder={
+                      category === LearningCategory.LANGUAGE 
+                        ? "Try: Learn the word 'serendipity'"
+                        : category === LearningCategory.SCIENCE
+                        ? "Try: Understand Newton's first law"
+                        : "Try: Explore the Renaissance movement"
+                    }
+                    rows={1}
+                    className="w-full bg-transparent border-b border-stone-300 py-4 px-2 pr-12 text-2xl serif italic focus:outline-none focus:border-stone-900 transition-colors placeholder:text-stone-300 text-center resize-none overflow-hidden min-h-[56px]"
+                    style={{ lineHeight: '1.4' }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSearch(e);
+                      }
+                    }}
                   />
                   <button 
                     type="submit"
@@ -153,38 +227,6 @@ const App: React.FC = () => {
                 <p className="text-red-800 text-xs uppercase tracking-widest">{error}</p>
               )}
             </div>
-          </div>
-        ) : (
-          /* Active Session State */
-          <div className="animate-in fade-in duration-1000">
-            <div className="flex flex-col items-center mb-12 space-y-4">
-                 <button 
-                  onClick={reset}
-                  className="text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors border-b border-stone-200 py-1"
-                 >
-                   ← New Exploration
-                 </button>
-            </div>
-
-            {category === LearningCategory.LANGUAGE && <LanguageModule data={content} />}
-            {category === LearningCategory.SCIENCE && <ScienceModule data={content} />}
-            {category === LearningCategory.LIBERAL_ARTS && (
-              <div className="max-w-4xl mx-auto p-12 thin-border bg-white/50 backdrop-blur-md">
-                 <h1 className="serif text-6xl italic mb-8">{content.title}</h1>
-                 <p className="text-xl leading-relaxed text-stone-700 mb-12 text-justify">{content.abstract}</p>
-                 <div className="grid md:grid-cols-2 gap-8">
-                   {content.perspectives?.map((p: any, i: number) => (
-                     <div key={i} className="p-8 thin-border">
-                        <span className="uppercase text-[10px] tracking-widest text-stone-400 block mb-4">{p.field} Perspective</span>
-                        <p className="serif italic text-lg">{p.insight}</p>
-                     </div>
-                   ))}
-                 </div>
-              </div>
-            )}
-            
-            {/* Footer Marble Decoration - Removed top border for continuity */}
-            <div className="h-64 w-full marble-bg mt-32"></div>
           </div>
         )}
       </main>

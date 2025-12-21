@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getCanvas, editModule, interact, reorderModules, CanvasResponse } from '../apiService';
+import { getCanvas, editModule, interact, reorderModules, deleteModule, CanvasResponse } from '../apiService';
 import ModuleCard from './ModuleCard';
 import {
   DndContext,
@@ -14,7 +14,7 @@ import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
+  rectSortingStrategy,
 } from '@dnd-kit/sortable';
 
 interface CanvasPageProps {
@@ -45,17 +45,17 @@ const CanvasPage: React.FC<CanvasPageProps> = ({ canvasId, onReset, onCanvasChan
     loadCanvas();
   }, [canvasId]);
 
-  const loadCanvas = async () => {
+  const loadCanvas = async (silent = false) => {
     try {
-      setIsLoading(true);
+      if (!silent) setIsLoading(true);
       setError(null);
       const data = await getCanvas(canvasId);
       setCanvasData(data);
     } catch (err) {
       console.error('加载 Canvas 失败:', err);
-      setError('加载失败，请重试');
+      if (!silent) setError('加载失败，请重试');
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
     }
   };
 
@@ -78,6 +78,26 @@ const CanvasPage: React.FC<CanvasPageProps> = ({ canvasId, onReset, onCanvasChan
     } catch (err) {
       console.error('编辑模块失败:', err);
       throw err;
+    }
+  };
+
+  // 删除模块
+  const handleDeleteModule = async (moduleId: string) => {
+    try {
+      await deleteModule(moduleId);
+      
+      // 从本地状态中移除
+      setCanvasData((prev) => {
+        if (!prev) return prev;
+        
+        return {
+          ...prev,
+          modules: prev.modules.filter((m) => m.module.id !== moduleId),
+        };
+      });
+    } catch (err) {
+      console.error('删除模块失败:', err);
+      alert('删除失败，请重试');
     }
   };
 
@@ -159,7 +179,7 @@ const CanvasPage: React.FC<CanvasPageProps> = ({ canvasId, onReset, onCanvasChan
         <div className="text-center space-y-4">
           <p className="text-red-600">{error || '加载失败'}</p>
           <button
-            onClick={loadCanvas}
+            onClick={() => loadCanvas()}
             className="text-xs uppercase tracking-widest px-6 py-2 border border-stone-900 hover:bg-stone-900 hover:text-white transition-all"
           >
             重试
@@ -175,20 +195,13 @@ const CanvasPage: React.FC<CanvasPageProps> = ({ canvasId, onReset, onCanvasChan
     <div className="min-h-screen relative notebook-grid">
       <div className="max-w-[1400px] mx-auto px-12 pt-32 pb-64">
         {/* 笔记手稿式标题区域 */}
-        <header className="mb-24 max-w-3xl animate-in fade-in slide-in-from-left-4 duration-1000">
-          <div className="space-y-8">
-            <h1 className="serif text-7xl md:text-8xl italic text-stone-900 tracking-tight leading-none">
-              {canvas.title}
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-stone-600 leading-relaxed serif italic border-l-2 border-stone-100 pl-8 py-2">
-              Exploring the formal structures and underlying principles of {canvas.title.toLowerCase()}. 
-              A curated synthesis of knowledge, linguistic artifacts, and interactive evidence.
-            </p>
-          </div>
+        <header className="mb-12 animate-in fade-in slide-in-from-left-4 duration-1000">
+          <h1 className="serif text-3xl md:text-4xl italic text-stone-900 tracking-tight leading-snug max-w-full">
+            {canvas.title}
+          </h1>
         </header>
 
-        {/* 模块区域 - 改为 Flex Wrap 允许并排 */}
+        {/* 模块区域 - 自由拖拽布局 */}
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -196,7 +209,7 @@ const CanvasPage: React.FC<CanvasPageProps> = ({ canvasId, onReset, onCanvasChan
         >
           <SortableContext
             items={modules.map((m) => m.module.id)}
-            strategy={verticalListSortingStrategy}
+            strategy={rectSortingStrategy}
           >
             <div className="flex flex-wrap items-start gap-8 pb-24">
               {modules.map(({ module, current_version }) => (
@@ -205,6 +218,8 @@ const CanvasPage: React.FC<CanvasPageProps> = ({ canvasId, onReset, onCanvasChan
                   module={module}
                   version={current_version}
                   onEdit={handleEditModule}
+                  onDelete={handleDeleteModule}
+                  onRefresh={async () => await loadCanvas(true)}
                 />
               ))}
             </div>
@@ -217,18 +232,24 @@ const CanvasPage: React.FC<CanvasPageProps> = ({ canvasId, onReset, onCanvasChan
         <div className="w-full max-w-xl pointer-events-auto relative group">
           {/* 输入框容器 */}
           <div className={`
-            bg-white/40 backdrop-blur-md border border-stone-200/50 shadow-sm rounded-full p-1
+            bg-white/40 backdrop-blur-md border border-stone-200/50 shadow-sm rounded-3xl p-1
             transition-all duration-500 ease-out
             ${isInteracting ? 'scale-[0.98] opacity-100' : 'opacity-60 hover:opacity-100 hover:bg-white/60 hover:shadow-md'}
           `}>
-            <div className="relative flex items-center">
-              <input
-                type="text"
+            <div className="relative flex items-end">
+              <textarea
                 value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
+                onChange={(e) => {
+                  setPrompt(e.target.value);
+                  // Auto-resize
+                  e.target.style.height = 'auto';
+                  e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+                }}
                 placeholder="Expand, explain, or discover..."
-                className="w-full bg-transparent border-none py-2.5 pl-6 pr-12 text-sm text-stone-800 placeholder:text-stone-400 placeholder:serif placeholder:italic focus:ring-0 focus:outline-none"
+                className="w-full bg-transparent border-none py-2.5 pl-6 pr-14 text-sm text-stone-800 placeholder:text-stone-400 placeholder:serif placeholder:italic focus:ring-0 focus:outline-none resize-none overflow-y-auto max-h-[120px]"
                 disabled={isInteracting}
+                rows={1}
+                style={{ minHeight: '44px', lineHeight: '1.5' }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -242,10 +263,10 @@ const CanvasPage: React.FC<CanvasPageProps> = ({ canvasId, onReset, onCanvasChan
                 onClick={handleInteract}
                 disabled={!prompt.trim() || isInteracting}
                 className={`
-                  absolute right-1.5 p-2 rounded-full transition-all duration-300
+                  absolute right-2 bottom-2 p-2.5 rounded-full transition-all duration-300 flex-shrink-0
                   ${prompt.trim() && !isInteracting 
-                    ? 'bg-stone-900 text-white shadow-sm' 
-                    : 'bg-transparent text-stone-300'}
+                    ? 'bg-stone-900 text-white shadow-sm hover:bg-stone-800' 
+                    : 'bg-transparent text-stone-300 cursor-not-allowed'}
                 `}
               >
                 {isInteracting ? (

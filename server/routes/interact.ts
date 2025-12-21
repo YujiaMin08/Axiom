@@ -1,7 +1,13 @@
 import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { canvasDB, moduleDB, versionDB } from '../db';
-import { generateModulePlan, generateModuleContent, analyzeIntent } from '../planner';
+// 导入简化版协调器
+import { 
+  generateModulePlan, 
+  generateModuleContent as generateContentWithAI 
+} from '../content-generator-orchestrator-simple.js';
+// 使用 Gemini AI 意图分析
+import { analyzeIntentWithAI } from '../gemini-intent-analyzer.js';
 import { CanvasResponse } from '../types';
 
 const router = Router();
@@ -23,8 +29,10 @@ router.post('/', async (req, res) => {
     const currentTopic = currentCanvas ? currentCanvas.title : '';
     const currentDomain = currentCanvas ? currentCanvas.domain : 'LIBERAL_ARTS'; // 默认领域
 
-    // 2. 分析意图
-    const analysis = analyzeIntent(prompt, currentTopic);
+    // 2. 使用 Gemini AI 分析意图
+    console.log(`🤖 Analyzing intent with AI: "${prompt}"`);
+    const analysis = await analyzeIntentWithAI(prompt, currentTopic, currentDomain);
+    console.log(`✨ Intent detected: ${analysis.action}`, analysis.reasoning);
 
     // 3. 执行相应操作
     if (analysis.action === 'NEW_CANVAS') {
@@ -43,19 +51,33 @@ router.post('/', async (req, res) => {
       canvasDB.create(newCanvasId, topic, currentDomain);
 
       // 生成模块计划
-      const modulePlan = generateModulePlan(topic, currentDomain);
+      const modulePlan = await generateModulePlan(topic, currentDomain);
 
-      // 生成模块
-      for (let i = 0; i < modulePlan.length; i++) {
-        const plan = modulePlan[i];
+      // 并行生成模块
+      const modulePromises = modulePlan.map(async (plan, i) => {
         const moduleId = uuidv4();
         moduleDB.create(moduleId, newCanvasId, plan.type, i);
         
-        const content = generateModuleContent(topic, currentDomain, plan.type);
-        const versionId = uuidv4();
-        versionDB.create(versionId, moduleId, `Initial: ${plan.title}`, JSON.stringify(content));
-        moduleDB.updateStatus(moduleId, 'ready');
-      }
+        try {
+        const content = await generateContentWithAI({
+          topic,
+          domain: currentDomain,
+          moduleType: plan.type,
+          moduleId  // 传递 moduleId，用于异步更新
+        });
+          
+          const versionId = uuidv4();
+          versionDB.create(versionId, moduleId, `Initial: ${plan.title}`, JSON.stringify(content));
+          moduleDB.updateStatus(moduleId, 'ready');
+        } catch (error) {
+          const errorContent = { type: 'text', title: plan.title, body: '生成失败' };
+          const versionId = uuidv4();
+          versionDB.create(versionId, moduleId, `Initial: ${plan.title}`, JSON.stringify(errorContent));
+          moduleDB.updateStatus(moduleId, 'ready');
+        }
+      });
+
+      await Promise.all(modulePromises);
 
       const responseData = buildCanvasResponse(newCanvasId);
       return res.json({
@@ -82,16 +104,25 @@ router.post('/', async (req, res) => {
       moduleDB.create(moduleId, canvas_id, moduleType, newOrderIndex);
 
       // 生成内容
-      const content = generateModuleContent(
-        currentTopic, 
-        currentDomain, 
-        moduleType, 
-        prompt
-      );
+      try {
+        const content = await generateContentWithAI({
+          topic: currentTopic,
+          domain: currentDomain,
+          moduleType,
+          userPrompt: prompt,
+          previousModules: existingModules,
+          moduleId  // 传递 moduleId，用于异步更新
+        });
 
-      const versionId = uuidv4();
-      versionDB.create(versionId, moduleId, prompt, JSON.stringify(content));
-      moduleDB.updateStatus(moduleId, 'ready');
+        const versionId = uuidv4();
+        versionDB.create(versionId, moduleId, prompt, JSON.stringify(content));
+        moduleDB.updateStatus(moduleId, 'ready');
+      } catch (error) {
+        const errorContent = { type: 'text', title: 'Error', body: '生成失败' };
+        const versionId = uuidv4();
+        versionDB.create(versionId, moduleId, prompt, JSON.stringify(errorContent));
+        moduleDB.updateStatus(moduleId, 'ready');
+      }
 
       const responseData = buildCanvasResponse(canvas_id);
       return res.json({

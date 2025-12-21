@@ -31,3 +31,11 @@ data/
 # Environment variables
 .env
 .env.local
+
+# Test files and generated content
+test-*.ts
+test-*.js
+*.jpg
+*.png
+*.mp4
+*.html

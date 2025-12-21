@@ -31,6 +31,7 @@ export interface ModuleVersion {
 export type ContentJSON = 
   | TextContent
   | VideoContent
+  | ImageContent
   | HtmlAnimationContent
   | InteractiveAppContent
   | QuizContent;
@@ -50,6 +51,14 @@ export interface VideoContent {
   description?: string;
 }
 
+export interface ImageContent {
+  type: 'image';
+  title: string;
+  image_url?: string;
+  image_data?: string; // Base64 data URL
+  description?: string;
+}
+
 export interface HtmlAnimationContent {
   type: 'html_animation';
   title: string;
@@ -60,7 +69,8 @@ export interface HtmlAnimationContent {
 export interface InteractiveAppContent {
   type: 'interactive_app';
   title: string;
-  app_data: any;
+  app_data?: any;
+  html_content?: string; // 完整的 HTML 应用代码
   description?: string;
 }
 
@@ -108,11 +118,11 @@ export async function interact(canvasId: string, prompt: string): Promise<Intera
 /**
  * 创建新的 Canvas
  */
-export async function createCanvas(topic: string, domain: string): Promise<CanvasResponse> {
+export async function createCanvas(topic: string, domain: string, language?: 'en' | 'zh'): Promise<CanvasResponse> {
   const response = await fetch(`${API_BASE}/canvases`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ topic, domain })
+    body: JSON.stringify({ topic, domain, language })
   });
 
   if (!response.ok) {
@@ -244,6 +254,21 @@ export async function updateModuleSize(id: string, width: number, height: number
 
   if (!response.ok) {
     throw new Error('Failed to update size');
+  }
+
+  return response.json();
+}
+
+/**
+ * 删除模块
+ */
+export async function deleteModule(id: string): Promise<{ success: boolean }> {
+  const response = await fetch(`${API_BASE}/modules/${id}`, {
+    method: 'DELETE'
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete module');
   }
 
   return response.json();

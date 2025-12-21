@@ -5,7 +5,8 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyAw4tkBsTJYW0kYhkoGMX5RBCyt_EzJpPI';
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 /**
  * 故事内容输出结构
@@ -13,6 +14,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 interface StoryContentOutput {
   title: string;
   narrative_text: string;
+  chinese_translation?: string;  // 中文翻译（逐句对照）
   key_sentence: string;  // 故事的核心句子（可用于展示或引用）
   illustration_prompts: string[];  // 插图提示（供图像生成用）
   story_type: 'educational' | 'allegory' | 'historical' | 'scenario';
@@ -198,7 +200,7 @@ ${isSingleWord && domain === 'LANGUAGE' ? '- **MUST be brief**: For single word 
 - Style: Engaging, vivid, memorable
 - Educational: Naturally integrates learning points
 - Complete: Must have clear beginning, middle, and end (even if brief)
-- Bilingual: English narrative with Chinese term annotations where helpful
+- Bilingual: Provide full Chinese translation sentence by sentence for parallel reading
 
 ${isSingleWord ? 'Focus on ONE memorable scene or moment that captures the word\'s essence. Quality over length.' : 'The story should weave the concepts/words naturally into a coherent narrative.'}
 
@@ -213,7 +215,11 @@ Make it memorable and meaningful within the word limit!`;
       },
       narrative_text: { 
         type: Type.STRING,
-        description: `Complete story narrative. STRICT length requirement: ${targetLength}. Write a concise, complete story with beginning, middle, and end. Stay within word limit.`
+        description: `Complete story narrative in English. STRICT length requirement: ${targetLength}. Write a concise, complete story with beginning, middle, and end. Stay within word limit.`
+      },
+      chinese_translation: {
+        type: Type.STRING,
+        description: "Chinese translation of the story, sentence by sentence. Format: 'English sentence. Chinese sentence.\\n\\nNext English sentence. Next Chinese sentence.' Keep parallel structure."
       },
       key_sentence: {
         type: Type.STRING,
@@ -239,7 +245,7 @@ Make it memorable and meaningful within the word limit!`;
         description: "The learning takeaway or moral of the story"
       }
     },
-    required: ["title", "narrative_text", "key_sentence", "illustration_prompts", "story_type"]
+    required: ["title", "narrative_text", "chinese_translation", "key_sentence", "illustration_prompts", "story_type"]
   };
 
   try {
