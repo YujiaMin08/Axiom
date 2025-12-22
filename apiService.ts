@@ -1,6 +1,25 @@
 // API 服务 - 与后端通信
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001/api';
+// 确保 API_BASE 始终以 /api 结尾
+const getApiBase = () => {
+  const envBase = import.meta.env.VITE_API_BASE || 'http://localhost:3001/api';
+  
+  // 如果环境变量没有 /api 后缀，自动添加
+  if (envBase && !envBase.endsWith('/api')) {
+    // 移除末尾的斜杠（如果有）
+    const cleanBase = envBase.replace(/\/$/, '');
+    return `${cleanBase}/api`;
+  }
+  
+  return envBase;
+};
+
+const API_BASE = getApiBase();
+
+// 开发环境打印 API_BASE（生产环境会被 tree-shake）
+if (import.meta.env.DEV) {
+  console.log('🔗 API_BASE:', API_BASE);
+}
 
 export interface Canvas {
   id: string;

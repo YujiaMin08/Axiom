@@ -19,11 +19,50 @@ const PORT = process.env.PORT || 3001;
 
 // CORS 配置 - 支持生产环境
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const ALLOWED_ORIGINS = [
+  FRONTEND_URL,
+  'http://localhost:5173',
+  // 支持 Vercel 预览 URL 模式
+  ...(FRONTEND_URL.includes('vercel.app') ? [
+    /^https:\/\/.*\.vercel\.app$/,
+    /^https:\/\/.*-.*\.vercel\.app$/
+  ] : [])
+].filter(Boolean);
+
+console.log('🌐 CORS 配置:', {
+  FRONTEND_URL,
+  ALLOWED_ORIGINS: ALLOWED_ORIGINS.map(o => typeof o === 'string' ? o : 'regex')
+});
+
 app.use(cors({
-  origin: [FRONTEND_URL, 'http://localhost:5173'],
+  origin: (origin, callback) => {
+    // 允许无 origin 的请求（如 Postman）
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    // 检查是否在允许列表中
+    const isAllowed = ALLOWED_ORIGINS.some(allowed => {
+      if (typeof allowed === 'string') {
+        return origin === allowed;
+      }
+      if (allowed instanceof RegExp) {
+        return allowed.test(origin);
+      }
+      return false;
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.warn('⚠️ CORS 阻止来源:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Type']
 }));
 
 app.use(express.json());
