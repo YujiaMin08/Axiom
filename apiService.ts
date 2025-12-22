@@ -16,9 +16,14 @@ const getApiBase = () => {
 
 const API_BASE = getApiBase();
 
-// 开发环境打印 API_BASE（生产环境会被 tree-shake）
-if (import.meta.env.DEV) {
-  console.log('🔗 API_BASE:', API_BASE);
+// 打印 API_BASE 用于调试（生产环境也需要）
+console.log('🔗 API_BASE:', API_BASE);
+console.log('🔗 VITE_API_BASE (raw):', import.meta.env.VITE_API_BASE);
+
+// 检查 API_BASE 是否正确
+if (!API_BASE.includes('/api')) {
+  console.error('❌ 警告: API_BASE 不包含 /api，可能导致请求失败！');
+  console.error('请检查 Vercel 环境变量 VITE_API_BASE 是否正确设置');
 }
 
 export interface Canvas {

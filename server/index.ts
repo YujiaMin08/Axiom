@@ -19,50 +19,65 @@ const PORT = process.env.PORT || 3001;
 
 // CORS 配置 - 支持生产环境
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
-const ALLOWED_ORIGINS = [
-  FRONTEND_URL,
-  'http://localhost:5173',
-  // 支持 Vercel 预览 URL 模式
-  ...(FRONTEND_URL.includes('vercel.app') ? [
-    /^https:\/\/.*\.vercel\.app$/,
-    /^https:\/\/.*-.*\.vercel\.app$/
-  ] : [])
-].filter(Boolean);
+
+// 构建允许的来源列表
+const getAllowedOrigins = () => {
+  const origins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    FRONTEND_URL
+  ].filter(Boolean);
+  
+  // 如果 FRONTEND_URL 是 vercel.app，添加通配符支持
+  if (FRONTEND_URL && FRONTEND_URL.includes('vercel.app')) {
+    // 提取基础域名（例如：axiom-kydhlkhph-yohjis-projects-cd869e14.vercel.app）
+    // 但 cors 库不支持通配符，所以我们需要动态检查
+    origins.push(FRONTEND_URL);
+  }
+  
+  return [...new Set(origins)]; // 去重
+};
+
+const ALLOWED_ORIGINS = getAllowedOrigins();
 
 console.log('🌐 CORS 配置:', {
   FRONTEND_URL,
-  ALLOWED_ORIGINS: ALLOWED_ORIGINS.map(o => typeof o === 'string' ? o : 'regex')
+  ALLOWED_ORIGINS,
+  NODE_ENV: process.env.NODE_ENV
 });
 
 app.use(cors({
   origin: (origin, callback) => {
-    // 允许无 origin 的请求（如 Postman）
+    // 允许无 origin 的请求（如 Postman、curl）
     if (!origin) {
       return callback(null, true);
     }
     
-    // 检查是否在允许列表中
-    const isAllowed = ALLOWED_ORIGINS.some(allowed => {
-      if (typeof allowed === 'string') {
-        return origin === allowed;
-      }
-      if (allowed instanceof RegExp) {
-        return allowed.test(origin);
-      }
-      return false;
-    });
+    // 开发环境：允许所有 localhost
+    if (origin.includes('localhost')) {
+      return callback(null, true);
+    }
     
-    if (isAllowed) {
+    // 生产环境：检查是否在允许列表中
+    const isAllowed = ALLOWED_ORIGINS.some(allowed => origin === allowed);
+    
+    // 额外检查：如果是 vercel.app 域名，也允许（支持预览 URL）
+    const isVercelApp = origin.includes('.vercel.app');
+    
+    if (isAllowed || isVercelApp) {
+      console.log('✅ CORS 允许来源:', origin);
       callback(null, true);
     } else {
       console.warn('⚠️ CORS 阻止来源:', origin);
-      callback(new Error('Not allowed by CORS'));
+      console.warn('   允许的来源:', ALLOWED_ORIGINS);
+      callback(new Error(`Not allowed by CORS. Origin: ${origin}`));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Content-Type']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Type'],
+  maxAge: 86400 // 24 小时
 }));
 
 app.use(express.json());
