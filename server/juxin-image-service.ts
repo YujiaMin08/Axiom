@@ -14,7 +14,10 @@
  */
 
 const JUXIN_BASE_URL = 'https://api.jxincm.cn';
-const JUXIN_API_KEY = process.env.JUXIN_API_KEY || 'sk-eMBQokcDGcuksgbrkbOST9GPMFVAUssxA6Rt5qRn4isUVTwM';
+const JUXIN_API_KEY = process.env.JUXIN_API_KEY;
+if (!JUXIN_API_KEY) {
+  throw new Error('JUXIN_API_KEY environment variable is required. Please set it in your .env file.');
+}
 
 // ============ 类型定义 ============
 

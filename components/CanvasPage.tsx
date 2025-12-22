@@ -197,8 +197,8 @@ const CanvasPage: React.FC<CanvasPageProps> = ({ canvasId, onReset, onCanvasChan
         {/* 笔记手稿式标题区域 */}
         <header className="mb-12 animate-in fade-in slide-in-from-left-4 duration-1000">
           <h1 className="serif text-3xl md:text-4xl italic text-stone-900 tracking-tight leading-snug max-w-full">
-            {canvas.title}
-          </h1>
+              {canvas.title}
+            </h1>
         </header>
 
         {/* 模块区域 - 自由拖拽布局 */}

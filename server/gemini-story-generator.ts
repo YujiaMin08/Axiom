@@ -5,7 +5,10 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyAw4tkBsTJYW0kYhkoGMX5RBCyt_EzJpPI';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+if (!GEMINI_API_KEY) {
+  throw new Error('GEMINI_API_KEY environment variable is required. Please set it in your .env file.');
+}
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 /**
