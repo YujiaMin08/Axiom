@@ -48,8 +48,19 @@ export async function generateTextContent(
     user_preferences?: any;
     previous_content?: string;
     user_refinement?: string;
+    language?: 'en' | 'zh';  // 内容语言设置
   }
 ): Promise<TextContentOutput> {
+  
+  // 确定输出语言
+  const outputLanguage = domain === 'LANGUAGE' ? 'bilingual' : (context?.language || 'en');
+  
+  // 构建语言要求说明
+  const languageRequirement = domain === 'LANGUAGE' 
+    ? `**LANGUAGE REQUIREMENT**: Use BILINGUAL format (English + Chinese). The main content should be in English, with Chinese translations or explanations provided sentence-by-sentence or section-by-section.`
+    : outputLanguage === 'zh'
+    ? `**LANGUAGE REQUIREMENT**: Generate ALL content in CHINESE (简体中文) only. Do not mix English and Chinese. Use Chinese for all text, including technical terms (you can provide English terms in parentheses if needed for clarity).`
+    : `**LANGUAGE REQUIREMENT**: Generate ALL content in ENGLISH only. Do not mix English and Chinese. Use English for all text, explanations, and technical terms.`;
   
   const systemInstruction = `You are an expert educational content writer for Axiom, a GenUI-powered learning platform for students aged 12-18 (G7-G12).
 
@@ -65,9 +76,8 @@ Core Principles:
 
 4. **Structure**: Organize content with clear sections, bullet points, and visual hierarchy (using Markdown).
 
-5. **Bilingual Support**: 
-   - For LANGUAGE domain: Content should be primarily in the target language with explanations in Chinese when helpful
-   - For SCIENCE and LIBERAL_ARTS: Mix English and Chinese naturally - use English for technical terms with Chinese explanations
+5. **Language Requirement**: 
+${languageRequirement}
 
 Domain-Specific Guidelines:
 
@@ -78,7 +88,7 @@ ${domain === 'LANGUAGE' ? `
 - For "overview": Give a comprehensive introduction
 - For "examples": Provide 3-5 varied, realistic examples showing different contexts
 - Include etymology when relevant and interesting
-- Use bilingual approach: English for the word/content, Chinese for explanations
+- Use bilingual approach: English for the word/content, Chinese for explanations (sentence-by-sentence or section-by-section)
 ` : ''}
 
 ${domain === 'SCIENCE' ? `
@@ -89,7 +99,7 @@ ${domain === 'SCIENCE' ? `
 - For "examples": Use concrete, relatable scenarios
 - Connect abstract concepts to tangible experiences
 - Use analogies and visual descriptions
-- Technical terms in English, explanations in Chinese when helpful
+${outputLanguage === 'zh' ? '- All content must be in Chinese (简体中文) only' : '- All content must be in English only'}
 ` : ''}
 
 ${domain === 'LIBERAL_ARTS' ? `
@@ -100,6 +110,7 @@ ${domain === 'LIBERAL_ARTS' ? `
 - Connect concepts to contemporary issues
 - Encourage critical thinking with open-ended questions
 - Balance between depth and accessibility
+${outputLanguage === 'zh' ? '- All content must be in Chinese (简体中文) only' : '- All content must be in English only'}
 ` : ''}
 
 Content Structure:
@@ -147,7 +158,7 @@ Requirements:
 - Style: Engaging, clear, and accessible
 - Structure: Well-organized with Markdown headings and sections
 - Format: Use **bold** for key terms, bullet points for lists
-- Bilingual: Mix English and Chinese naturally (English terms with Chinese annotations)
+${outputLanguage === 'bilingual' ? '- Language: Bilingual (English + Chinese, sentence-by-sentence or section-by-section)' : outputLanguage === 'zh' ? '- Language: Chinese (简体中文) only - no English mixed in' : '- Language: English only - no Chinese mixed in'}
 - Focus: Cover the essential points, avoid unnecessary elaboration
 - Completeness: Must have a clear beginning, middle, and end
 

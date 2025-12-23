@@ -50,14 +50,27 @@ export async function generatePerspectiveContent(
     other_perspectives?: OtherPerspective[];  // 其他已生成的视角
     phenomenon_description?: string;  // 现象的基础描述
     target_audience?: string;
+    language?: 'en' | 'zh';  // 内容语言设置
   }
 ): Promise<PerspectiveContentOutput> {
   
   // 从模块类型中提取学科（如 perspective_chemistry → chemistry）
   const discipline = modulePlan.type.replace('perspective_', '');
   const audience = context?.target_audience || 'G7-G12';
+  
+  // 确定输出语言（LANGUAGE 领域始终双语）
+  const outputLanguage = domain === 'LANGUAGE' ? 'bilingual' : (context?.language || 'en');
+  
+  // 构建语言要求说明
+  const languageRequirement = domain === 'LANGUAGE' 
+    ? `**LANGUAGE REQUIREMENT**: Use BILINGUAL format (English + Chinese). Main content in English, with Chinese translations provided.`
+    : outputLanguage === 'zh'
+    ? `**LANGUAGE REQUIREMENT**: Generate ALL content in CHINESE (简体中文) only. All explanations, descriptions, and text must be in Chinese.`
+    : `**LANGUAGE REQUIREMENT**: Generate ALL content in ENGLISH only. All explanations, descriptions, and text must be in English.`;
 
   const systemInstruction = `You are a multidisciplinary educator who excels at showing students how different academic fields analyze the same phenomenon.
+
+${languageRequirement}
 
 Your role is to present a specific disciplinary "lens" (perspective) on a topic or phenomenon. This is NOT about providing a general overview - it's about showing what THIS SPECIFIC DISCIPLINE reveals that others might miss.
 

@@ -325,7 +325,7 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ module, version, onEdit, onDele
         const currentQ = content.questions[quizIndex];
         const totalQ = content.questions.length;
         const hasAnswered = selectedAnswer !== null;
-
+        
         return (
           <div className="h-full flex flex-col">
              {/* Question Card */}
@@ -424,7 +424,7 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ module, version, onEdit, onDele
                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" /></svg>
                  </button>
                </div>
-             </div>
+            </div>
           </div>
         );
 
@@ -465,8 +465,8 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ module, version, onEdit, onDele
           <div className="h-full flex flex-col justify-center items-center p-8 bg-stone-50 rounded-lg border border-stone-200 border-dashed">
             <p className="text-xs uppercase tracking-widest text-stone-400 mb-4">Interactive App</p>
             <pre className="text-[10px] text-stone-500 overflow-auto max-h-full w-full bg-white p-4 rounded border border-stone-200">
-              {JSON.stringify(content.app_data, null, 2)}
-            </pre>
+                {JSON.stringify(content.app_data, null, 2)}
+              </pre>
           </div>
         );
 
@@ -485,61 +485,61 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ module, version, onEdit, onDele
       style={style}
       className="group relative inline-block"
       data-module-id={module.id}
-    >
-      <Resizable
-        defaultSize={{
-          width: module.width || 600,
+        >
+        <Resizable
+          defaultSize={{
+            width: module.width || 600,
           height: module.height || 'auto'
-        }}
-        minWidth={300}
-        maxWidth={1400}
-        minHeight={150}
-        onResizeStop={(e, direction, ref, d) => {
-          const newWidth = (module.width || 600) + d.width;
-          const newHeight = (module.height || 400) + d.height;
-          updateModuleSize(module.id, newWidth, newHeight);
+          }}
+          minWidth={300}
+          maxWidth={1400}
+          minHeight={150}
+          onResizeStop={(e, direction, ref, d) => {
+            const newWidth = (module.width || 600) + d.width;
+            const newHeight = (module.height || 400) + d.height;
+            updateModuleSize(module.id, newWidth, newHeight);
           triggerMathJax();
-        }}
+          }}
         className="bg-white/70 backdrop-blur-sm border border-stone-200 rounded-2xl overflow-hidden hover:shadow-2xl transition-shadow duration-500 flex flex-col"
-        handleClasses={{
-          bottomRight: "w-6 h-6 bottom-0 right-0 cursor-nwse-resize active:opacity-100 z-20"
-        }}
-        handleStyles={{
-          bottomRight: {
-            bottom: 0,
-            right: 0,
-            width: '24px',
-            height: '24px',
-            background: 'linear-gradient(135deg, transparent 70%, rgba(120, 113, 108, 0.15) 70%)',
-          }
-        }}
-      >
-        <div className="p-8 flex flex-col h-full relative">
-          {/* 标题栏 */}
-          <div className="flex items-start justify-between mb-6 flex-shrink-0">
-            <div className="flex items-center space-x-4 flex-1">
-              {/* 拖拽手柄 */}
-              <div
-                {...attributes}
-                {...listeners}
-                className="cursor-grab active:cursor-grabbing text-stone-200 hover:text-stone-900 transition-colors flex-shrink-0"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 8h16M4 16h16" />
-                </svg>
-              </div>
-              
-              <h3 
+          handleClasses={{
+            bottomRight: "w-6 h-6 bottom-0 right-0 cursor-nwse-resize active:opacity-100 z-20"
+          }}
+          handleStyles={{
+            bottomRight: {
+              bottom: 0,
+              right: 0,
+              width: '24px',
+              height: '24px',
+              background: 'linear-gradient(135deg, transparent 70%, rgba(120, 113, 108, 0.15) 70%)',
+            }
+          }}
+        >
+          <div className="p-8 flex flex-col h-full relative">
+            {/* 标题栏 */}
+            <div className="flex items-start justify-between mb-6 flex-shrink-0">
+              <div className="flex items-center space-x-4 flex-1">
+                {/* 拖拽手柄 */}
+                <div
+                  {...attributes}
+                  {...listeners}
+                  className="cursor-grab active:cursor-grabbing text-stone-200 hover:text-stone-900 transition-colors flex-shrink-0"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 8h16M4 16h16" />
+                  </svg>
+                </div>
+                
+                <h3 
                 className="serif text-2xl italic text-stone-900 cursor-pointer hover:text-stone-600 transition-colors"
-                onClick={() => setIsEditing(true)}
-              >
-                {content.title}
-              </h3>
+                  onClick={() => setIsEditing(true)}
+                >
+                  {content.title}
+                </h3>
             </div>
-            
-            {/* 删除按钮 */}
+
+                {/* 删除按钮 */}
             {onDelete && (
-              <button
+                <button
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -547,17 +547,17 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ module, version, onEdit, onDele
                 }}
                 className="opacity-0 group-hover:opacity-100 p-2 -mr-2 -mt-1 text-stone-300 hover:text-red-500 hover:bg-red-50/50 rounded-lg transition-all duration-200"
                 title="Delete module"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+                  </svg>
+                </button>
             )}
-          </div>
+            </div>
 
-          {/* 内容区 */}
+            {/* 内容区 */}
           <div className="flex-1 min-h-0 relative">
-            {renderContent(content)}
+              {renderContent(content)}
             
             {/* 编辑加载覆盖层 */}
             {isLoading && (
@@ -567,52 +567,52 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ module, version, onEdit, onDele
                 <p className="text-stone-400 text-xs">Applying your refinement</p>
               </div>
             )}
-          </div>
+            </div>
 
           {/* 底部交互区 (编辑图标 & 输入框) */}
-          <div className="mt-6 pt-4 border-t border-stone-100 flex flex-col space-y-3">
-            {!isEditing ? (
-              <div className="flex items-center">
-                <button 
-                  onClick={() => setIsEditing(true)}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 text-stone-300 hover:text-stone-600 hover:bg-stone-50 rounded-lg"
-                  title="Edit this module"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
-                </button>
-              </div>
-            ) : (
-              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <div className="flex items-center space-x-3 bg-stone-50 rounded-xl px-4 py-2 border border-stone-200">
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={editPrompt}
-                    onChange={(e) => setEditPrompt(e.target.value)}
+            <div className="mt-6 pt-4 border-t border-stone-100 flex flex-col space-y-3">
+              {!isEditing ? (
+                <div className="flex items-center">
+                  <button 
+                    onClick={() => setIsEditing(true)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 text-stone-300 hover:text-stone-600 hover:bg-stone-50 rounded-lg"
+                    title="Edit this module"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                  </button>
+                </div>
+              ) : (
+                <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <div className="flex items-center space-x-3 bg-stone-50 rounded-xl px-4 py-2 border border-stone-200">
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={editPrompt}
+                      onChange={(e) => setEditPrompt(e.target.value)}
                     placeholder="e.g. Make it simpler, add more examples..."
                     className="flex-1 bg-transparent py-1 text-sm serif italic focus:outline-none text-stone-800 placeholder:text-stone-300"
-                    onKeyDown={(e) => {
+                      onKeyDown={(e) => {
                       if (e.key === 'Enter' && !isLoading) handleEdit();
-                      if (e.key === 'Escape') setIsEditing(false);
-                    }}
+                        if (e.key === 'Escape') setIsEditing(false);
+                      }}
                     disabled={isLoading}
-                  />
-                  <div className="flex items-center space-x-2">
-                    <button 
-                      onClick={handleEdit}
-                      disabled={isLoading || !editPrompt.trim()}
+                    />
+                    <div className="flex items-center space-x-2">
+                      <button 
+                        onClick={handleEdit}
+                        disabled={isLoading || !editPrompt.trim()}
                       className="text-stone-400 hover:text-stone-900 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
+                      >
                       {isLoading ? (
                         <div className="w-3 h-3 border border-stone-400 border-t-transparent rounded-full animate-spin"></div>
                       ) : (
                         '↵'
                       )}
-                    </button>
-                    <div className="h-3 w-px bg-stone-200"></div>
-                    <button 
+                      </button>
+                      <div className="h-3 w-px bg-stone-200"></div>
+                      <button 
                       onClick={() => {
                         if (!isLoading) {
                           setIsEditing(false);
@@ -621,18 +621,18 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ module, version, onEdit, onDele
                       }}
                       disabled={isLoading}
                       className="text-stone-300 hover:text-stone-600 p-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-      </Resizable>
+        </Resizable>
       
       {/* Delete Confirmation Dialog - Overlays the entire card */}
       {showDeleteConfirm && (

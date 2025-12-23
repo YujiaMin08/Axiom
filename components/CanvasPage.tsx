@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getCanvas, editModule, interact, reorderModules, deleteModule, CanvasResponse } from '../apiService';
+import { getContentLanguage } from '../utils/languageSettings';
 import ModuleCard from './ModuleCard';
 import {
   DndContext,
@@ -62,7 +63,9 @@ const CanvasPage: React.FC<CanvasPageProps> = ({ canvasId, onReset, onCanvasChan
   // 编辑单个模块
   const handleEditModule = async (moduleId: string, prompt: string) => {
     try {
-      const updatedModule = await editModule(moduleId, prompt);
+      // 获取语言设置
+      const language = canvasData ? getContentLanguage(canvasData.canvas.domain) : 'en';
+      const updatedModule = await editModule(moduleId, prompt, language);
       
       // 局部更新：只更新对应的模块
       setCanvasData((prev) => {

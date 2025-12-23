@@ -37,10 +37,23 @@ export async function generateComparisonContent(
   modulePlan: any,
   context?: {
     items_to_compare?: string[];  // 如果已知要对比什么
+    language?: 'en' | 'zh';  // 内容语言设置
   }
 ): Promise<ComparisonContentOutput> {
+  
+  // 确定输出语言（LANGUAGE 领域始终双语）
+  const outputLanguage = domain === 'LANGUAGE' ? 'bilingual' : (context?.language || 'en');
+  
+  // 构建语言要求说明
+  const languageRequirement = domain === 'LANGUAGE' 
+    ? `**LANGUAGE REQUIREMENT**: Use BILINGUAL format (English + Chinese). Main content in English, with Chinese translations provided.`
+    : outputLanguage === 'zh'
+    ? `**LANGUAGE REQUIREMENT**: Generate ALL content in CHINESE (简体中文) only. All text, descriptions, and comparisons must be in Chinese.`
+    : `**LANGUAGE REQUIREMENT**: Generate ALL content in ENGLISH only. All text, descriptions, and comparisons must be in English.`;
 
   const systemInstruction = `You are an expert educator specializing in comparative analysis and helping students understand concepts through contrast and comparison.
+
+${languageRequirement}
 
 Your role is to create clear, structured comparisons that highlight both similarities and differences, helping students develop deeper understanding through contrast.
 

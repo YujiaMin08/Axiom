@@ -32,6 +32,8 @@ export interface AnimationGenerationInput {
     duration?: number;                 // 动画时长（秒）
     style?: 'minimalist' | 'colorful' | 'professional' | 'playful';
     keyPoints?: string[];              // 需要强调的关键点
+    language?: 'en' | 'zh';            // 内容语言设置
+    user_refinement?: string;          // 用户编辑提示
   };
 }
 
@@ -76,18 +78,30 @@ export async function generateAnimation(
   const learningLevel = context?.learningLevel || 'intermediate';
   const duration = context?.duration || 15;  // 默认 15 秒
   const style = context?.style || 'professional';
+  
+  // 确定输出语言（LANGUAGE 领域始终双语）
+  const outputLanguage = domain === 'LANGUAGE' ? 'bilingual' : (context?.language || 'en');
+  
+  // 构建语言要求说明
+  const languageRequirement = domain === 'LANGUAGE' 
+    ? `**LANGUAGE REQUIREMENT**: Use BILINGUAL format (English + Chinese). All text, labels, and descriptions should be in English with Chinese translations provided.`
+    : outputLanguage === 'zh'
+    ? `**LANGUAGE REQUIREMENT**: Generate ALL content in CHINESE (简体中文) only. All text, labels, descriptions, and subtitles must be in Chinese.`
+    : `**LANGUAGE REQUIREMENT**: Generate ALL content in ENGLISH only. All text, labels, descriptions, and subtitles must be in English.`;
 
   // 系统指令
-  const systemInstruction = `你是 Axiom 的 HTML 动画生成专家，请参考雾象 AI 的电影级质量标准。
+  const systemInstruction = `You are an expert HTML animation generator for Axiom, creating cinematic-quality educational animations.
 
-你的任务：生成电影级质量的自动播放教育动画（HTML 格式）。
+Your task: Generate cinematic-quality auto-playing educational animations in HTML format.
 
-【核心原则】
-1. **电影级视觉** - 精美的设计、柔和的阴影、专业的配色
-2. **流畅动画** - 使用 cubic-bezier 缓动、细腻的 timing
-3. **完整叙事** - 开场介绍 → 过程演示 → 结束总结
-4. **双语字幕** - 每个步骤都有中英文说明
-5. **自包含** - 单个 HTML 文件，包含所有 CSS 和 JavaScript
+${languageRequirement}
+
+【Core Principles】
+1. **Cinematic Visuals** - Beautiful design, soft shadows, professional color schemes
+2. **Smooth Animations** - Use cubic-bezier easing, refined timing
+3. **Complete Narrative** - Opening introduction → Process demonstration → Closing summary
+4. **Language Support** - All text and labels follow the language requirement above
+5. **Self-contained** - Single HTML file with all CSS and JavaScript
 
 【必须包含的设计元素】参考雾象 AI 风格：
 

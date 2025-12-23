@@ -78,12 +78,13 @@ export async function generateModuleContent(context: GenerationContext): Promise
  * 使用真实的 AI 生成器
  */
 async function generateWithRealAI(context: GenerationContext): Promise<ContentJSON> {
-  const { topic, domain, moduleType, userPrompt, previousModules } = context;
+  const { topic, domain, moduleType, userPrompt, previousModules, language } = context;
 
-  // 构建生成上下文，包含用户的编辑提示
-  const generatorContext = userPrompt 
-    ? { user_refinement: userPrompt } 
-    : {};
+  // 构建生成上下文，包含用户的编辑提示和语言设置
+  const generatorContext = {
+    ...(userPrompt ? { user_refinement: userPrompt } : {}),
+    ...(language ? { language } : {})
+  };
 
   // 根据模块类型动态导入并调用对应的生成器
   switch (moduleType) {
@@ -142,6 +143,7 @@ async function generateWithRealAI(context: GenerationContext): Promise<ContentJS
     }
 
     // === 交互应用类 ===
+    case 'interactive_app':
     case 'experiment':
     case 'manipulation':
     case 'game': {
@@ -149,14 +151,14 @@ async function generateWithRealAI(context: GenerationContext): Promise<ContentJS
       const result = await generateSimpleInteractiveApp(
         topic,
         domain,
-        { type: moduleType, title: `${topic} ${moduleType}` },
+        { type: moduleType === 'interactive_app' ? 'interactive_app' : moduleType, title: `${topic} ${moduleType === 'interactive_app' ? 'Interactive App' : moduleType}` },
         generatorContext
       );
       return {
         type: 'interactive_app',
-        title: `${topic} - Interactive ${moduleType}`,
-        app_data: result.html,
-        description: `Interactive ${moduleType} for ${topic}`
+        title: `${topic} - Interactive App`,
+        html_content: result.html,
+        description: 'Interactive learning application'
       };
     }
 
@@ -307,7 +309,8 @@ async function generateWithRealAI(context: GenerationContext): Promise<ContentJS
         context: { 
           duration: 15, 
           style: 'colorful',
-          user_refinement: userPrompt  // 传递用户编辑提示
+          user_refinement: userPrompt,  // 传递用户编辑提示
+          language  // 传递语言设置
         }
       });
       

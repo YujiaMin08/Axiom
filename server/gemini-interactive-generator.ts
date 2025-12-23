@@ -257,9 +257,19 @@ Requirements:
 Technical Stack:
 - Vanilla JavaScript (ES6+)
 - CSS3 for styling and animations
-- Canvas or SVG for visualizations (choose based on the spec)
+- Canvas or SVG for 2D visualizations (choose based on the spec)
+- **Three.js for 3D visualizations** - If the spec indicates `is_3d: true` or mentions 3D, you MUST use Three.js
 - No external dependencies unless absolutely necessary
-- If using a library (e.g., Chart.js), load via CDN
+- If using a library (e.g., Chart.js, Three.js), load via CDN
+
+**3D Visualization (if spec.is_3d is true):**
+- Load Three.js: `<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>`
+- Load OrbitControls: `<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>`
+- Create Scene, PerspectiveCamera, WebGLRenderer
+- Add proper lighting (AmbientLight + DirectionalLight)
+- Enable OrbitControls for interactive camera control
+- Update 3D scene in real-time when parameters change
+- Use professional 3D geometry, materials, and rendering
 
 Code Quality:
 - Use semantic HTML5
@@ -271,6 +281,8 @@ Code Quality:
 
 Make it production-ready and delightful to use.`;
 
+  const requires3D = spec.visualizations?.is_3d === true;
+  
   const userPrompt = `Topic: "${topic}"
 
 SPECIFICATION:
@@ -278,10 +290,22 @@ ${JSON.stringify(spec, null, 2)}
 
 Generate a complete, self-contained HTML file that implements this specification.
 
+${requires3D ? `
+**CRITICAL: This specification requires 3D visualization (is_3d: true).**
+You MUST use Three.js for 3D rendering:
+- Load Three.js: <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+- Load OrbitControls: <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+- Create a proper 3D scene with Scene, PerspectiveCamera, WebGLRenderer
+- Add lighting (AmbientLight + DirectionalLight)
+- Enable OrbitControls for user interaction (rotate, zoom, pan)
+- Update the 3D scene in real-time when parameters change
+- Use professional 3D geometry, materials, and colors
+` : ''}
+
 The HTML must:
 - Include all necessary inline CSS and JavaScript
 - Implement all parameters and controls specified
-- Create the visualizations described
+- Create the visualizations described${requires3D ? ' (using Three.js for 3D)' : ''}
 - Include the interaction loop (Predict/Manipulate/Observe/Explain/Check)
 - Include the verification questions
 - Be mobile-responsive

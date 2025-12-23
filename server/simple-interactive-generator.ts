@@ -69,8 +69,31 @@ Technical Requirements:
 - Immediate feedback on interactions
 - Use vanilla JavaScript (ES6+), CSS3, and HTML5
 - If visualization needs a chart, you may use Chart.js via CDN
-- Keep total code under 400 lines when possible
+- **If the spec mentions 3D visualization, 3D models, 3D simulation, or spatial concepts, you MUST use Three.js for 3D rendering**
+- Keep total code under 400 lines when possible (3D apps may be longer)
 - Add brief comments for key sections
+
+**3D VISUALIZATION REQUIREMENTS (if applicable):**
+If the spec requires 3D visualization (e.g., 3D molecular structures, 3D physics simulations, 3D geometric demonstrations, spatial relationships), you MUST:
+1. **Use Three.js library** - Load via CDN: Use script tag with src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+2. **Create a proper 3D scene** with:
+   - Scene, Camera, Renderer setup
+   - Proper lighting (ambient + directional lights)
+   - Interactive controls (OrbitControls for camera rotation)
+   - Real-time rendering loop
+3. **Include OrbitControls** for user interaction: Use script tag with src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"
+4. **Make it interactive** - Allow users to rotate, zoom, and pan the 3D view
+5. **Update in real-time** - When parameters change, update the 3D visualization immediately
+6. **Professional 3D rendering** - Use proper materials, colors, and geometry
+
+**3D EXAMPLES TO REFERENCE:**
+- Physics simulations: Charged particles in 3D fields, 3D wave propagation, 3D orbital motion
+- Chemistry: 3D molecular structures, 3D crystal lattices, 3D reaction mechanisms
+- Biology: 3D protein structures, 3D cell organelles, 3D anatomical models
+- Geometry: 3D geometric shapes, 3D transformations, 3D projections
+- Engineering: 3D mechanical systems, 3D fluid dynamics, 3D structural analysis
+
+**IMPORTANT**: If the topic involves spatial relationships, 3D structures, or 3D motion, DO NOT use 2D Canvas or SVG. Use Three.js for proper 3D visualization.
 
 EXAMPLE COLOR PALETTE (use similar bright colors):
 - Background: #FDFCF5 or white
@@ -135,11 +158,20 @@ ${domainSpecificGuidance}
 
 Write a detailed spec for an interactive web app to teach this concept.
 
+**IMPORTANT - 3D Visualization Assessment:**
+First, determine if this topic requires 3D visualization:
+- Does it involve spatial relationships, 3D structures, or 3D motion?
+- Examples that NEED 3D: molecular structures, 3D physics simulations, geometric 3D shapes, 3D animations, spatial demonstrations
+- Examples that DON'T need 3D: 2D graphs, 2D charts, 2D diagrams, text-based interactions
+
+If 3D is needed, explicitly state in your spec: "REQUIRES_3D_VISUALIZATION: true" and describe the 3D elements needed.
+
 Follow the example format shown above. Be specific about:
 - What parameters the user can adjust (sliders/toggles/inputs/word choices)
-- What visual feedback they see in real-time
+- What visual feedback they see in real-time (2D or 3D?)
 - What educational explanations are shown
 - What quiz questions verify understanding (if applicable)
+- **Whether 3D visualization is required** (if yes, describe the 3D scene, objects, and interactions needed)
 
 Make the spec clear and implementable.`;
 
@@ -161,8 +193,21 @@ Make the spec clear and implementable.`;
   // 等待避免限流
   await new Promise(resolve => setTimeout(resolve, 2000));
   
+  // 检测是否需要3D可视化
+  const requires3D = /REQUIRES_3D_VISUALIZATION|3D|three\.js|three-dimensional|spatial|3d visualization|3d simulation|3d model/i.test(spec);
+  
   // 第二步：生成 HTML
-  const htmlPrompt = spec + SPEC_ADDENDUM;
+  const htmlPrompt = spec + SPEC_ADDENDUM + (requires3D ? `
+
+**CRITICAL: This spec requires 3D visualization. You MUST use Three.js.**
+- Load Three.js: <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+- Load OrbitControls: <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+- Create a proper 3D scene with Scene, PerspectiveCamera, WebGLRenderer
+- Add lighting (AmbientLight + DirectionalLight)
+- Enable OrbitControls for user interaction (rotate, zoom, pan)
+- Update the 3D scene in real-time when parameters change
+- Use proper 3D geometry, materials, and colors
+- Make it professional and educational` : '');
   
   console.log('  → 生成 HTML 实现...');
   const htmlResponse = await ai.models.generateContent({

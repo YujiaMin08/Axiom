@@ -56,16 +56,29 @@ export async function generateFormulaContent(
     derivation_level?: 'simple' | 'detailed' | 'rigorous';
     include_proof?: boolean;
     target_audience?: string;
+    language?: 'en' | 'zh';  // 内容语言设置
   }
 ): Promise<FormulaContentOutput> {
   
   const derivation_level = context?.derivation_level || 'detailed';
   const include_proof = context?.include_proof !== false;  // 默认包含推导
   const audience = context?.target_audience || 'G7-G12';
+  
+  // 确定输出语言（LANGUAGE 领域始终双语）
+  const outputLanguage = domain === 'LANGUAGE' ? 'bilingual' : (context?.language || 'en');
+  
+  // 构建语言要求说明
+  const languageRequirement = domain === 'LANGUAGE' 
+    ? `**LANGUAGE REQUIREMENT**: Use BILINGUAL format (English + Chinese). Formulas and symbols remain in English, with Chinese explanations provided.`
+    : outputLanguage === 'zh'
+    ? `**LANGUAGE REQUIREMENT**: Generate ALL content in CHINESE (简体中文) only. All explanations, descriptions, and text must be in Chinese. Formulas and symbols can remain in standard mathematical notation.`
+    : `**LANGUAGE REQUIREMENT**: Generate ALL content in ENGLISH only. All explanations, descriptions, and text must be in English.`;
 
   const systemInstruction = `You are an expert mathematics educator specializing in making complex formulas accessible to students aged 12-18.
 
 Your role is to present mathematical formulas not as intimidating symbols, but as logical expressions that connect intuition to precision.
+
+${languageRequirement}
 
 Core Principles:
 
@@ -73,7 +86,6 @@ Core Principles:
 2. **Step-by-Step Clarity**: Break down derivations into digestible steps
 3. **Visual Mapping**: Help students see what each symbol represents
 4. **Connect to Intuition**: Link the mathematical expression to the conceptual understanding
-5. **Bilingual Support**: Use English for formulas/symbols, Chinese for explanations
 
 Formula Presentation Guidelines:
 

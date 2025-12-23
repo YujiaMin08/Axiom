@@ -103,6 +103,10 @@ router.post('/', async (req, res) => {
       const moduleId = uuidv4();
       moduleDB.create(moduleId, canvas_id, moduleType, newOrderIndex);
 
+      // 确定语言设置（如果没有传递，根据 domain 判断）
+      const contentLanguage = currentDomain === 'LANGUAGE' ? 'zh' : 'en';
+      console.log(`🌐 扩展模块语言: ${contentLanguage}`);
+
       // 生成内容
       try {
         const content = await generateContentWithAI({
@@ -111,7 +115,8 @@ router.post('/', async (req, res) => {
           moduleType,
           userPrompt: prompt,
           previousModules: existingModules,
-          moduleId  // 传递 moduleId，用于异步更新
+          moduleId,  // 传递 moduleId，用于异步更新
+          language: contentLanguage  // 传递语言设置
         });
 
         const versionId = uuidv4();

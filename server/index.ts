@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { initDatabase } from './db';
@@ -48,13 +49,15 @@ console.log('🌐 CORS 配置:', {
 
 app.use(cors({
   origin: (origin, callback) => {
-    // 允许无 origin 的请求（如 Postman、curl）
-    if (!origin) {
+    // 允许无 origin 的请求（如 Postman、curl、本地文件 file://）
+    if (!origin || origin === 'null' || origin === 'file://') {
+      console.log('✅ CORS 允许: 无 origin (本地文件或工具)');
       return callback(null, true);
     }
     
     // 开发环境：允许所有 localhost
-    if (origin.includes('localhost')) {
+    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      console.log('✅ CORS 允许: localhost', origin);
       return callback(null, true);
     }
     

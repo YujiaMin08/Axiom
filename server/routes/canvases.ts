@@ -257,7 +257,7 @@ router.get('/', (req, res) => {
 router.post('/:id/expand', async (req, res) => {
   try {
     const { id } = req.params;
-    const { prompt } = req.body as ExpandCanvasRequest;
+    const { prompt, language } = req.body as ExpandCanvasRequest & { language?: 'en' | 'zh' };
 
     if (!prompt) {
       return res.status(400).json({ error: 'prompt 是必需的' });
@@ -267,6 +267,10 @@ router.post('/:id/expand', async (req, res) => {
     if (!canvas) {
       return res.status(404).json({ error: 'Canvas 未找到' });
     }
+
+    // 确定语言设置（如果没有传递，根据 domain 判断）
+    const contentLanguage = language || ((canvas as any).domain === 'LANGUAGE' ? 'zh' : 'en');
+    console.log(`🌐 扩展模块语言: ${contentLanguage}`);
 
     // 获取当前模块数量，决定新模块的 order_index
     const existingModules = moduleDB.findByCanvasId(id) as any[];
@@ -288,7 +292,8 @@ router.post('/:id/expand', async (req, res) => {
         moduleType: plan.type,
         userPrompt: prompt,
         previousModules: plan.type.includes('quiz') ? existingModules : undefined,
-        moduleId  // 传递 moduleId，用于异步更新
+        moduleId,  // 传递 moduleId，用于异步更新
+        language: contentLanguage  // 传递语言设置
       });
 
       // 创建版本

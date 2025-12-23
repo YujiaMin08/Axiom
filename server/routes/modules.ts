@@ -14,7 +14,7 @@ const router = Router();
 router.post('/:id/edit', async (req, res) => {
   try {
     const { id } = req.params;
-    const { prompt } = req.body as EditModuleRequest;
+    const { prompt, language } = req.body as EditModuleRequest & { language?: 'en' | 'zh' };
 
     if (!prompt) {
       return res.status(400).json({ error: 'prompt 是必需的' });
@@ -32,10 +32,14 @@ router.post('/:id/edit', async (req, res) => {
       return res.status(404).json({ error: 'Canvas 未找到' });
     }
 
-    // 3. 更新模块状态为 generating
+    // 3. 确定语言设置（如果没有传递，根据 domain 判断）
+    const contentLanguage = language || (canvas.domain === 'LANGUAGE' ? 'zh' : 'en');
+    console.log(`🌐 编辑模块语言: ${contentLanguage}`);
+
+    // 4. 更新模块状态为 generating
     moduleDB.updateStatus(id, 'generating');
 
-    // 4. 使用 AI 生成新内容
+    // 5. 使用 AI 生成新内容
     try {
       console.log(`🔄 编辑模块: ${module.type}`);
       
@@ -44,7 +48,8 @@ router.post('/:id/edit', async (req, res) => {
         domain: canvas.domain,
         moduleType: module.type,
         userPrompt: prompt,
-        moduleId: id  // 传递 moduleId，用于异步更新
+        moduleId: id,  // 传递 moduleId，用于异步更新
+        language: contentLanguage  // 传递语言设置
       });
 
       // 5. 创建新的 ModuleVersion

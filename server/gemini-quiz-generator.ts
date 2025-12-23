@@ -54,12 +54,25 @@ export async function generateQuizContent(
     generated_modules: GeneratedModuleContent[];  // 前面已生成的所有模块
     learning_objectives?: string[];
     target_audience?: string;
+    language?: 'en' | 'zh';  // 内容语言设置
   }
 ): Promise<QuizContentOutput> {
   
   const audience = context.target_audience || 'G7-G12';
+  
+  // 确定输出语言
+  const outputLanguage = domain === 'LANGUAGE' ? 'bilingual' : (context?.language || 'en');
+  
+  // 构建语言要求说明
+  const languageRequirement = domain === 'LANGUAGE' 
+    ? `**LANGUAGE REQUIREMENT**: Use BILINGUAL format (English + Chinese). Questions and options should be in English, with Chinese translations provided.`
+    : outputLanguage === 'zh'
+    ? `**LANGUAGE REQUIREMENT**: Generate ALL content in CHINESE (简体中文) only. All questions, options, and explanations must be in Chinese.`
+    : `**LANGUAGE REQUIREMENT**: Generate ALL content in ENGLISH only. All questions, options, and explanations must be in English.`;
 
   const systemInstruction = `You are an expert assessment designer for educational applications, specializing in creating meaningful, context-aware quiz questions for students aged 12-18.
+
+${languageRequirement}
 
 Your role is to design quiz questions that:
 1. TEST UNDERSTANDING, not just recall

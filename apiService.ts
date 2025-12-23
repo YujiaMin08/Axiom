@@ -185,14 +185,14 @@ export async function getAllCanvases(): Promise<Canvas[]> {
 /**
  * 编辑模块
  */
-export async function editModule(moduleId: string, prompt: string): Promise<{
+export async function editModule(moduleId: string, prompt: string, language?: 'en' | 'zh'): Promise<{
   module: Module;
   current_version: ModuleVersion;
 }> {
   const response = await fetch(`${API_BASE}/modules/${moduleId}/edit`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt })
+    body: JSON.stringify({ prompt, language })
   });
 
   if (!response.ok) {
@@ -205,11 +205,11 @@ export async function editModule(moduleId: string, prompt: string): Promise<{
 /**
  * 扩展 Canvas（添加新模块）
  */
-export async function expandCanvas(canvasId: string, prompt: string): Promise<CanvasResponse> {
+export async function expandCanvas(canvasId: string, prompt: string, language?: 'en' | 'zh'): Promise<CanvasResponse> {
   const response = await fetch(`${API_BASE}/canvases/${canvasId}/expand`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt })
+    body: JSON.stringify({ prompt, language })
   });
 
   if (!response.ok) {

@@ -111,11 +111,11 @@ const App: React.FC = () => {
 
           {/* axiom 标题 - 只在侧边栏关闭时显示 */}
           {!isSidebarOpen && (
-            <div 
-              className="cursor-pointer group" 
-              onClick={reset}
-            >
-              <span className="text-3xl font-bold tracking-tighter playfair text-stone-900/80 group-hover:text-stone-900 transition-colors">axiom</span>
+        <div 
+          className="cursor-pointer group" 
+          onClick={reset}
+        >
+          <span className="text-3xl font-bold tracking-tighter playfair text-stone-900/80 group-hover:text-stone-900 transition-colors">axiom</span>
             </div>
           )}
         </div>
@@ -131,7 +131,7 @@ const App: React.FC = () => {
             </button>
           </div>
         )}
-      </nav>
+        </nav>
 
       <main className="pt-24 min-h-screen z-10 relative">
         {canvasMode && canvasId ? (

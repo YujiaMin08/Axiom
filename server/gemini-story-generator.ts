@@ -51,10 +51,23 @@ export async function generateStoryContent(
     story_length?: 'short' | 'medium' | 'long';
     narrative_style?: string;
     other_modules?: ModulePlan[];
+    language?: 'en' | 'zh';  // 内容语言设置
   }
 ): Promise<StoryContentOutput> {
   
+  // 确定输出语言（LANGUAGE 领域始终双语）
+  const outputLanguage = domain === 'LANGUAGE' ? 'bilingual' : (context?.language || 'en');
+  
+  // 构建语言要求说明
+  const languageRequirement = domain === 'LANGUAGE' 
+    ? `**LANGUAGE REQUIREMENT**: Use BILINGUAL format (English + Chinese). The story narrative should be in English, with Chinese translations provided sentence-by-sentence.`
+    : outputLanguage === 'zh'
+    ? `**LANGUAGE REQUIREMENT**: Generate ALL content in CHINESE (简体中文) only. The entire story narrative must be in Chinese.`
+    : `**LANGUAGE REQUIREMENT**: Generate ALL content in ENGLISH only. The entire story narrative must be in English.`;
+  
   const systemInstruction = `You are a master storyteller and educational narrative designer for Axiom, creating engaging stories for students aged 12-18 (G7-G12).
+
+${languageRequirement}
 
 Your role is to craft stories that make learning memorable, meaningful, and enjoyable. Stories are powerful learning tools because they:
 - Create emotional connections to concepts
