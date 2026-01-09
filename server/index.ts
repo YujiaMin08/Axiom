@@ -21,69 +21,49 @@ const PORT = process.env.PORT || 3001;
 // CORS 配置 - 支持生产环境
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
-// 构建允许的来源列表
-const getAllowedOrigins = () => {
-  const origins = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    FRONTEND_URL
-  ].filter(Boolean);
-  
-  // 如果 FRONTEND_URL 是 vercel.app，添加通配符支持
-  if (FRONTEND_URL && FRONTEND_URL.includes('vercel.app')) {
-    // 提取基础域名（例如：axiom-kydhlkhph-yohjis-projects-cd869e14.vercel.app）
-    // 但 cors 库不支持通配符，所以我们需要动态检查
-    origins.push(FRONTEND_URL);
-  }
-  
-  return [...new Set(origins)]; // 去重
-};
-
-const ALLOWED_ORIGINS = getAllowedOrigins();
-
 console.log('🌐 CORS 配置:', {
   FRONTEND_URL,
-  ALLOWED_ORIGINS,
   NODE_ENV: process.env.NODE_ENV
 });
 
+// 简化的 CORS 配置 - 允许所有 Vercel 和本地请求
 app.use(cors({
   origin: (origin, callback) => {
-    // 允许无 origin 的请求（如 Postman、curl、本地文件 file://）
-    if (!origin || origin === 'null' || origin === 'file://') {
-      console.log('✅ CORS 允许: 无 origin (本地文件或工具)');
+    // 1. 允许无 origin 的请求（Postman、curl、file://）
+    if (!origin) {
       return callback(null, true);
     }
     
-    // 开发环境：允许所有 localhost
+    // 2. 允许所有 localhost 和 127.0.0.1
     if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
-      console.log('✅ CORS 允许: localhost', origin);
       return callback(null, true);
     }
     
-    // 生产环境：检查是否在允许列表中
-    const isAllowed = ALLOWED_ORIGINS.some(allowed => origin === allowed);
-    
-    // 额外检查：如果是 vercel.app 域名，也允许（支持预览 URL）
-    const isVercelApp = origin.includes('.vercel.app');
-    
-    if (isAllowed || isVercelApp) {
-      console.log('✅ CORS 允许来源:', origin);
-      callback(null, true);
-    } else {
-      console.warn('⚠️ CORS 阻止来源:', origin);
-      console.warn('   允许的来源:', ALLOWED_ORIGINS);
-      callback(new Error(`Not allowed by CORS. Origin: ${origin}`));
+    // 3. 允许所有 .vercel.app 域名（支持预览 URL）
+    if (origin.endsWith('.vercel.app')) {
+      console.log('✅ CORS 允许 Vercel:', origin);
+      return callback(null, true);
     }
+    
+    // 4. 允许配置的前端 URL
+    if (origin === FRONTEND_URL) {
+      console.log('✅ CORS 允许配置的前端:', origin);
+      return callback(null, true);
+    }
+    
+    // 其他来源拒绝
+    console.warn('⚠️ CORS 阻止来源:', origin);
+    callback(new Error(`CORS blocked: ${origin}`));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['Content-Type'],
-  maxAge: 86400 // 24 小时
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
 
-// ✅ 关键：处理 OPTIONS 预检请求（这是修复 CORS 错误的关键！）
+// ✅ 关键：处理所有 OPTIONS 预检请求
 app.options('*', cors());
 
 app.use(express.json());
