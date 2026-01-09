@@ -66,6 +66,10 @@ app.use(cors({
 // ✅ 关键：处理所有 OPTIONS 预检请求
 app.options('*', cors());
 
+// 确认日志：CORS 中间件已启用
+console.log('✅ CORS middleware enabled');
+console.log('✅ OPTIONS preflight handler enabled');
+
 app.use(express.json());
 
 // 确保 data 目录存在
