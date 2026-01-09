@@ -59,29 +59,33 @@ const corsOptions = {
   optionsSuccessStatus: 204
 };
 
-// 应用 CORS 配置
-app.use(cors(corsOptions));
+// 简化的 CORS 配置 - 允许所有 Vercel 和本地请求
+// app.use(cors(corsOptions)); // 暂时注释掉标准 CORS 中间件，完全使用下面的自定义中间件
 
-// ✅ 强制手动处理所有 OPTIONS 请求 (放在所有路由之前)
-app.options('*', (req, res) => {
-  // 手动设置 CORS 头，确保万无一失
+// ✅ 终极 CORS 解决方案：全局中间件拦截所有请求
+app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (origin && (
-    origin.includes('localhost') || 
-    origin.includes('127.0.0.1') || 
-    origin.endsWith('.vercel.app') || 
-    origin === FRONTEND_URL
-  )) {
+  
+  // 1. 允许所有来源（或根据需要进行过滤）
+  if (origin) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   } else {
-    // 允许所有来源 (调试模式)
-    if (origin) res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Origin', '*');
   }
-  
+
+  // 2. 设置其他必要的 CORS 头
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.status(204).end();
+
+  // 3. 如果是 OPTIONS 预检请求，直接返回 204，不再向下执行
+  if (req.method === 'OPTIONS') {
+    // console.log('⚡️ 拦截并处理 OPTIONS 请求:', req.path);
+    return res.status(204).end();
+  }
+
+  // 4. 非 OPTIONS 请求，继续处理
+  next();
 });
 
 // 确认日志：CORS 中间件已启用
