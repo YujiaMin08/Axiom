@@ -7,7 +7,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // 初始化数据库
-const db = new Database(path.join(__dirname, '../data/axiom.db'));
+const dbPath = path.join(__dirname, '../data/axiom.db');
+
+// 确保目录存在
+const dbDir = dirname(dbPath);
+import fs from 'fs';
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+}
+
+const db = new Database(dbPath);
 
 // 启用外键约束
 db.pragma('foreign_keys = ON');
