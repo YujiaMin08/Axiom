@@ -83,6 +83,9 @@ app.use(cors({
   maxAge: 86400 // 24 小时
 }));
 
+// ✅ 关键：处理 OPTIONS 预检请求（这是修复 CORS 错误的关键！）
+app.options('*', cors());
+
 app.use(express.json());
 
 // 确保 data 目录存在
