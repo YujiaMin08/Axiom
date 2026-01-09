@@ -26,45 +26,44 @@ console.log('🌐 CORS 配置:', {
   NODE_ENV: process.env.NODE_ENV
 });
 
-// 简化的 CORS 配置 - 允许所有 Vercel 和本地请求
-app.use(cors({
-  origin: (origin, callback) => {
+// 定义统一的 CORS 配置对象，确保普通请求和 OPTIONS 请求一致
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     // 1. 允许无 origin 的请求（Postman、curl、file://）
     if (!origin) {
       return callback(null, true);
     }
     
-    // 2. 允许所有 localhost 和 127.0.0.1
-    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+    // 2. 检查是否在白名单中
+    const isAllowed = 
+      origin.includes('localhost') || 
+      origin.includes('127.0.0.1') || 
+      origin.endsWith('.vercel.app') || 
+      origin === FRONTEND_URL;
+      
+    if (isAllowed) {
+      // console.log('✅ CORS 允许:', origin);
       return callback(null, true);
     }
     
-    // 3. 允许所有 .vercel.app 域名（支持预览 URL）
-    if (origin.endsWith('.vercel.app')) {
-      console.log('✅ CORS 允许 Vercel:', origin);
-      return callback(null, true);
-    }
-    
-    // 4. 允许配置的前端 URL
-    if (origin === FRONTEND_URL) {
-      console.log('✅ CORS 允许配置的前端:', origin);
-      return callback(null, true);
-    }
-    
-    // 其他来源拒绝
-    console.warn('⚠️ CORS 阻止来源:', origin);
-    callback(new Error(`CORS blocked: ${origin}`));
+    // 3. 紧急修复：对于调试阶段，记录警告但暂时允许通过
+    // 这样可以排除是 origin 字符串匹配微小差异导致的问题
+    console.warn('⚠️ CORS 非白名单来源 (暂时允许):', origin);
+    return callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   exposedHeaders: ['Content-Type'],
   preflightContinue: false,
   optionsSuccessStatus: 204
-}));
+};
 
-// ✅ 关键：处理所有 OPTIONS 预检请求
-app.options('*', cors());
+// 应用 CORS 配置
+app.use(cors(corsOptions));
+
+// ✅ 关键：处理所有 OPTIONS 预检请求，必须使用相同的配置
+app.options('*', cors(corsOptions));
 
 // 确认日志：CORS 中间件已启用
 console.log('✅ CORS middleware enabled');
