@@ -112,8 +112,9 @@ app.get('/api/health', (req, res) => {
 });
 
 // 启动服务器
-app.listen(PORT, () => {
-  console.log(`✨ Axiom API Server is running on http://localhost:${PORT}`);
+const HOST = '0.0.0.0'; // 显式绑定到所有网络接口
+app.listen(Number(PORT), HOST, () => {
+  console.log(`✨ Axiom API Server is running on http://${HOST}:${PORT}`);
   console.log(`📊 API Documentation:`);
   console.log(`   POST   /api/canvases          - 创建新 Canvas`);
   console.log(`   GET    /api/canvases/:id      - 获取 Canvas 详情`);
