@@ -62,8 +62,27 @@ const corsOptions = {
 // 应用 CORS 配置
 app.use(cors(corsOptions));
 
-// ✅ 关键：处理所有 OPTIONS 预检请求，必须使用相同的配置
-app.options('*', cors(corsOptions));
+// ✅ 强制手动处理所有 OPTIONS 请求 (放在所有路由之前)
+app.options('*', (req, res) => {
+  // 手动设置 CORS 头，确保万无一失
+  const origin = req.headers.origin;
+  if (origin && (
+    origin.includes('localhost') || 
+    origin.includes('127.0.0.1') || 
+    origin.endsWith('.vercel.app') || 
+    origin === FRONTEND_URL
+  )) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else {
+    // 允许所有来源 (调试模式)
+    if (origin) res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.status(204).end();
+});
 
 // 确认日志：CORS 中间件已启用
 console.log('✅ CORS middleware enabled');
