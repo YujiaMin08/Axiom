@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node'; // 引入 Clerk 中间件
 import { initDatabase } from './db';
 import canvasesRouter from './routes/canvases';
 import modulesRouter from './routes/modules';
@@ -26,41 +27,7 @@ console.log('🌐 CORS 配置:', {
   NODE_ENV: process.env.NODE_ENV
 });
 
-// 定义统一的 CORS 配置对象，确保普通请求和 OPTIONS 请求一致
-const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    // 1. 允许无 origin 的请求（Postman、curl、file://）
-    if (!origin) {
-      return callback(null, true);
-    }
-    
-    // 2. 检查是否在白名单中
-    const isAllowed = 
-      origin.includes('localhost') || 
-      origin.includes('127.0.0.1') || 
-      origin.endsWith('.vercel.app') || 
-      origin === FRONTEND_URL;
-      
-    if (isAllowed) {
-      // console.log('✅ CORS 允许:', origin);
-      return callback(null, true);
-    }
-    
-    // 3. 紧急修复：对于调试阶段，记录警告但暂时允许通过
-    // 这样可以排除是 origin 字符串匹配微小差异导致的问题
-    console.warn('⚠️ CORS 非白名单来源 (暂时允许):', origin);
-    return callback(null, true);
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-  exposedHeaders: ['Content-Type'],
-  preflightContinue: false,
-  optionsSuccessStatus: 204
-};
-
-// 简化的 CORS 配置 - 允许所有 Vercel 和本地请求
-// app.use(cors(corsOptions)); // 暂时注释掉标准 CORS 中间件，完全使用下面的自定义中间件
+// ... (CORS configuration kept as is) ...
 
 // ✅ 终极 CORS 解决方案：全局中间件拦截所有请求
 app.use((req, res, next) => {
@@ -80,7 +47,6 @@ app.use((req, res, next) => {
 
   // 3. 如果是 OPTIONS 预检请求，直接返回 204，不再向下执行
   if (req.method === 'OPTIONS') {
-    // console.log('⚡️ 拦截并处理 OPTIONS 请求:', req.path);
     return res.status(204).end();
   }
 
@@ -93,6 +59,11 @@ console.log('✅ CORS middleware enabled');
 console.log('✅ OPTIONS preflight handler enabled');
 
 app.use(express.json());
+
+// ✅ 集成 Clerk 认证中间件
+// 这会将认证状态注入到 req.auth 中 (userId, sessionId, etc.)
+// 即使未登录，请求也会通过，但 req.auth.userId 为 null
+app.use(ClerkExpressWithAuth());
 
 // 确保 data 目录存在
 const dataDir = path.join(__dirname, '../data');
@@ -109,6 +80,8 @@ app.use('/api/modules', modulesRouter);
 app.use('/api/interact', interactRouter);
 app.use('/api/async', asyncStatusRouter);
 app.use('/api/scenario', scenarioChatRouter);
+
+// ... (Rest of the file) ...
 
 // 健康检查
 app.get('/api/health', (req, res) => {

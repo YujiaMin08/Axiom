@@ -113,6 +113,7 @@ router.post('/test', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { topic, domain, language } = req.body as CreateCanvasRequest & { language?: 'en' | 'zh' };
+    const userId = (req as any).auth?.userId;
 
     if (!topic || !domain) {
       return res.status(400).json({ error: 'topic 和 domain 是必需的' });
@@ -124,7 +125,7 @@ router.post('/', async (req, res) => {
 
     // 1. 创建 Canvas
     const canvasId = uuidv4();
-    canvasDB.create(canvasId, topic, domain);
+    canvasDB.create(canvasId, topic, domain, userId);
 
     // 2. 使用真实的 Gemini Planner 生成模块计划
     console.log(`🚀 开始生成 Canvas: "${topic}" (${domain})`);
@@ -223,10 +224,17 @@ router.post('/', async (req, res) => {
 router.get('/:id', (req, res) => {
   try {
     const { id } = req.params;
+    const userId = (req as any).auth?.userId;
     const canvasData = buildCanvasResponse(id);
 
     if (!canvasData) {
       return res.status(404).json({ error: 'Canvas 未找到' });
+    }
+
+    // 检查所有权 (如果有 user_id)
+    const canvasUserId = (canvasData.canvas as any).user_id;
+    if (userId && canvasUserId && canvasUserId !== userId) {
+      return res.status(403).json({ error: '无权访问此 Canvas' });
     }
 
     res.json(canvasData);
@@ -238,11 +246,18 @@ router.get('/:id', (req, res) => {
 
 /**
  * GET /canvases
- * 获取所有 Canvas 列表
+ * 获取所有 Canvas 列表 (仅返回当前用户的)
  */
 router.get('/', (req, res) => {
   try {
-    const canvases = canvasDB.findAll();
+    const userId = (req as any).auth?.userId;
+    
+    // 如果未登录，返回空列表或所有（取决于策略，这里假设返回空以保护隐私）
+    if (!userId) {
+      return res.json([]); 
+    }
+
+    const canvases = canvasDB.findAllByUserId(userId);
     res.json(canvases);
   } catch (error) {
     console.error('获取 Canvas 列表错误:', error);
@@ -258,6 +273,7 @@ router.post('/:id/expand', async (req, res) => {
   try {
     const { id } = req.params;
     const { prompt, language } = req.body as ExpandCanvasRequest & { language?: 'en' | 'zh' };
+    const userId = (req as any).auth?.userId;
 
     if (!prompt) {
       return res.status(400).json({ error: 'prompt 是必需的' });
@@ -266,6 +282,11 @@ router.post('/:id/expand', async (req, res) => {
     const canvas = canvasDB.findById(id);
     if (!canvas) {
       return res.status(404).json({ error: 'Canvas 未找到' });
+    }
+
+    // 检查所有权
+    if (userId && (canvas as any).user_id && (canvas as any).user_id !== userId) {
+      return res.status(403).json({ error: '无权操作此 Canvas' });
     }
 
     // 确定语言设置（如果没有传递，根据 domain 判断）
@@ -337,6 +358,7 @@ router.post('/:id/new', async (req, res) => {
   try {
     const { id } = req.params;
     const { new_topic } = req.body as NewCanvasRequest;
+    const userId = (req as any).auth?.userId;
 
     if (!new_topic) {
       return res.status(400).json({ error: 'new_topic 是必需的' });
@@ -347,13 +369,18 @@ router.post('/:id/new', async (req, res) => {
       return res.status(404).json({ error: 'Canvas 未找到' });
     }
 
+    // 检查所有权 (如果有 user_id)
+    if (userId && (oldCanvas as any).user_id && (oldCanvas as any).user_id !== userId) {
+      return res.status(403).json({ error: '无权操作此 Canvas' });
+    }
+
     // 归档旧 Canvas
     canvasDB.archive(id);
 
-    // 创建新 Canvas（使用相同的 domain）
+    // 创建新 Canvas（使用相同的 domain，继承 user_id）
     const newCanvasId = uuidv4();
     const domain = (oldCanvas as any).domain;
-    canvasDB.create(newCanvasId, new_topic, domain);
+    canvasDB.create(newCanvasId, new_topic, domain, userId);
 
     // 生成新模块
     console.log(`🚀 创建新 Canvas: "${new_topic}"`);

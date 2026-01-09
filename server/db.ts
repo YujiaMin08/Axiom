@@ -30,9 +30,17 @@ export function initDatabase() {
       title TEXT NOT NULL,
       domain TEXT NOT NULL CHECK(domain IN ('LANGUAGE', 'SCIENCE', 'LIBERAL_ARTS')),
       status TEXT NOT NULL CHECK(status IN ('active', 'archived')) DEFAULT 'active',
-      created_at INTEGER NOT NULL
+      created_at INTEGER NOT NULL,
+      user_id TEXT
     )
   `);
+
+  // 尝试添加 user_id 列（如果不存在）
+  try {
+    db.exec('ALTER TABLE canvases ADD COLUMN user_id TEXT');
+  } catch (e) {
+    // 列已存在，忽略错误
+  }
 
   // Module 表
   db.exec(`
@@ -73,17 +81,23 @@ export function initDatabase() {
 
 // Canvas CRUD
 export const canvasDB = {
-  create: (id: string, title: string, domain: string) => {
+  create: (id: string, title: string, domain: string, user_id: string | null = null) => {
     const stmt = db.prepare(`
-      INSERT INTO canvases (id, title, domain, status, created_at)
-      VALUES (?, ?, ?, 'active', ?)
+      INSERT INTO canvases (id, title, domain, status, created_at, user_id)
+      VALUES (?, ?, ?, 'active', ?, ?)
     `);
-    return stmt.run(id, title, domain, Date.now());
+    return stmt.run(id, title, domain, Date.now(), user_id);
   },
 
   findById: (id: string) => {
     const stmt = db.prepare('SELECT * FROM canvases WHERE id = ?');
     return stmt.get(id);
+  },
+
+  // 只查找属于特定用户的 Canvas
+  findAllByUserId: (user_id: string) => {
+    const stmt = db.prepare('SELECT * FROM canvases WHERE user_id = ? ORDER BY created_at DESC');
+    return stmt.all(user_id);
   },
 
   findAll: () => {
