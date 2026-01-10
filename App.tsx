@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react";
 import { LearningCategory } from './types';
 import DynamicBackground from './components/DynamicBackground';
 import CanvasPage from './components/CanvasPage';
@@ -152,8 +152,6 @@ const App: React.FC = () => {
                 </button>
               </div>
             )}
-            
-            <UserButton afterSignOutUrl="/" />
           </div>
         </nav>
 
