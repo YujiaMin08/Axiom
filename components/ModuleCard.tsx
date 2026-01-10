@@ -193,6 +193,29 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ module, version, onEdit, onDele
     switch (content.type) {
       case 'text':
         const htmlContent = markdownToHtml(content.body);
+        
+        // Check for bilingual content (Language domain story)
+        const isBilingual = (content as any).chinese_translation;
+        
+        if (isBilingual) {
+          const chineseText = (content as any).chinese_translation;
+          return (
+            <div className="h-full overflow-y-auto pr-4 custom-scrollbar flex flex-col space-y-6">
+              <div 
+                className="prose prose-stone max-w-none text-lg leading-relaxed font-serif text-stone-800"
+                dangerouslySetInnerHTML={{ __html: htmlContent }}
+              />
+              <div className="border-t border-stone-200 pt-6">
+                <h4 className="text-xs uppercase tracking-widest text-stone-400 mb-3 font-sans">Translation</h4>
+                <div 
+                  className="prose prose-stone max-w-none text-stone-600 leading-relaxed font-sans text-base"
+                  dangerouslySetInnerHTML={{ __html: markdownToHtml(chineseText) }}
+                />
+              </div>
+            </div>
+          );
+        }
+
         return (
           <div className="h-full overflow-y-auto pr-4 custom-scrollbar">
             <div 

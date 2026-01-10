@@ -235,7 +235,7 @@ Make it memorable and meaningful within the word limit!`;
       },
       chinese_translation: {
         type: Type.STRING,
-        description: "Chinese translation of the story, sentence by sentence. Format: 'English sentence. Chinese sentence.\\n\\nNext English sentence. Next Chinese sentence.' Keep parallel structure."
+        description: "Chinese translation of the story narrative. Do NOT include the English text. Provide ONLY the Chinese translation."
       },
       key_sentence: {
         type: Type.STRING,
