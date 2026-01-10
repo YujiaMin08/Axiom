@@ -175,7 +175,7 @@ Make it practical, engaging, and educational. The learner should feel like they'
   };
 
   const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
+    model: 'gemini-1.5-flash',
     contents: userPrompt,
     config: {
       systemInstruction,
@@ -183,12 +183,18 @@ Make it practical, engaging, and educational. The learner should feel like they'
       responseSchema,
       temperature: 0.7,
       maxOutputTokens: 8192,
-      thinkingConfig: { thinkingLevel: 'minimal' }  // 降低 thinking level 避免过长输出
     },
   });
 
   try {
-    return JSON.parse(response.text);
+    let jsonString = response.text;
+    // 移除可能存在的 Markdown 代码块标记
+    if (jsonString.startsWith('```json')) {
+      jsonString = jsonString.replace(/^```json\n/, '').replace(/\n```$/, '');
+    } else if (jsonString.startsWith('```')) {
+      jsonString = jsonString.replace(/^```\n/, '').replace(/\n```$/, '');
+    }
+    return JSON.parse(jsonString);
   } catch (parseError) {
     console.error('❌ Scenario JSON 解析失败');
     console.error('响应长度:', response.text.length);

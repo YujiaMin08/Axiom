@@ -63,7 +63,7 @@ export async function createVideoTask(params: VideoCreateParams): Promise<VideoC
 
   const requestBody = {
     images,
-    model: 'sora-2',
+    model: 'sora-2-all',
     orientation,
     prompt,
     size,
@@ -89,6 +89,12 @@ export async function createVideoTask(params: VideoCreateParams): Promise<VideoC
 
     if (!response.ok) {
       const errorText = await response.text();
+      
+      // 特殊处理上游负载饱和错误
+      if (errorText.includes('当前分组上游负载已饱和')) {
+        throw new Error('VIDEO_SERVICE_BUSY: 视频生成服务当前正忙，请稍后再试。');
+      }
+      
       throw new Error(`视频任务创建失败: ${response.status} ${response.statusText}\n${errorText}`);
     }
 
