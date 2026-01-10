@@ -262,6 +262,10 @@ For LIBERAL_ARTS domain (通识教育 - General Education):
 Topic: "${topic}"
 ${userContext ? `User Context: ${userContext}` : ''}
 
+CRITICAL INSTRUCTION:
+If the "Topic" appears to be a specific request to add a module (e.g., "Add an interactive animation", "Create a quiz", "Give me a story"), you MUST interpret this as an INSTRUCTION for the current topic, NOT as a new topic itself.
+In this case, your plan should consist of ONE or TWO modules that directly fulfill this request, relevant to the inferred underlying topic.
+
 Design a learning module structure for this topic. Consider:
 - What foundation does a student need first?
 - Which interactive elements would make this concept tangible?

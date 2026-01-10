@@ -429,24 +429,32 @@ export function planNewModule(prompt: string, domain: string): ModulePlan {
   const lowerPrompt = prompt.toLowerCase();
 
   if (lowerPrompt.includes('quiz') || lowerPrompt.includes('测验')) {
-    return { type: 'quiz', title: '知识测验' };
+    return { type: 'quiz', title: 'Knowledge Quiz' };
   }
   if (lowerPrompt.includes('story') || lowerPrompt.includes('故事')) {
-    return { type: 'story', title: '相关故事' };
+    return { type: 'story', title: 'Narrative Story' };
   }
   if (lowerPrompt.includes('experiment') || lowerPrompt.includes('实验')) {
-    return { type: 'experiment', title: '互动实验' };
+    return { type: 'experiment', title: 'Interactive Experiment' };
   }
   if (lowerPrompt.includes('formula') || lowerPrompt.includes('公式')) {
-    return { type: 'formula', title: '数学公式' };
+    return { type: 'formula', title: 'Mathematical Formula' };
   }
   if (lowerPrompt.includes('animation') || lowerPrompt.includes('动画')) {
-    return { type: 'animation', title: '动画演示' };
+    return { type: 'animation', title: 'Visual Animation' };
   }
-  if (lowerPrompt.includes('比较') || lowerPrompt.includes('对比')) {
-    return { type: 'comparison', title: '对比分析' };
+  if (lowerPrompt.includes('comparison') || lowerPrompt.includes('比较') || lowerPrompt.includes('对比')) {
+    return { type: 'comparison', title: 'Comparison' };
+  }
+  if (lowerPrompt.includes('video') || lowerPrompt.includes('视频')) {
+    return { type: 'video', title: 'Video Explanation' };
+  }
+  if (lowerPrompt.includes('image') || lowerPrompt.includes('图片') || lowerPrompt.includes('illustration')) {
+    return { type: 'image', title: 'Visual Illustration' };
   }
 
-  return { type: 'overview', title: '补充说明' };
+  // 如果没有明确匹配，尝试推断 (这里可以调用 LLM，但为了速度先用规则)
+  // 优化：将 prompt 作为 title 的一部分，让后续生成器知道用户想要什么
+  return { type: 'overview', title: 'Answer: ' + prompt };
 }
 
