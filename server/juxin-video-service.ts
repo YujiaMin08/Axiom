@@ -63,7 +63,7 @@ export async function createVideoTask(params: VideoCreateParams): Promise<VideoC
 
   const requestBody = {
     images,
-    model: 'sora-2-all',
+    model: 'veo3.1-4k',
     orientation,
     prompt,
     size,
