@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node'; // 引入 Clerk 中间件
 import { initDatabase } from './db';
 import canvasesRouter from './routes/canvases';
 import modulesRouter from './routes/modules';
@@ -59,11 +58,6 @@ console.log('✅ CORS middleware enabled');
 console.log('✅ OPTIONS preflight handler enabled');
 
 app.use(express.json());
-
-// ✅ 集成 Clerk 认证中间件
-// 这会将认证状态注入到 req.auth 中 (userId, sessionId, etc.)
-// 即使未登录，请求也会通过，但 req.auth.userId 为 null
-app.use(ClerkExpressWithAuth());
 
 // 确保 data 目录存在
 const dataDir = path.join(__dirname, '../data');
