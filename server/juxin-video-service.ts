@@ -1,10 +1,9 @@
 /**
- * 聚鑫视频生成服务 (Sora2)
+ * 聚鑫视频生成服务 (veo3.1-fast)
  * 
- * 功能：
- * - 创建视频生成任务
- * - 查询任务状态
- * - 轮询等待任务完成
+ * API 端点：
+ * - 创建任务: POST https://api.jxincm.cn/v1/video/create
+ * - 查询任务: GET  https://api.jxincm.cn/v1/video/query?id=xxx
  */
 
 const JUXIN_BASE_URL = 'https://api.jxincm.cn';
@@ -16,11 +15,9 @@ if (!JUXIN_API_KEY) {
 interface VideoCreateParams {
   prompt: string;
   images?: string[];
-  orientation?: 'portrait' | 'landscape';
-  size?: 'small' | 'large';
-  duration?: number;
-  watermark?: boolean;
-  private?: boolean;
+  aspect_ratio?: '16:9' | '9:16' | '1:1';
+  enhance_prompt?: boolean;
+  enable_upsample?: boolean;
 }
 
 interface VideoCreateResponse {
@@ -31,18 +28,15 @@ interface VideoCreateResponse {
 
 interface VideoQueryResponse {
   id: string;
-  status: 'pending' | 'completed' | 'failed';
+  status: 'pending' | 'running' | 'completed' | 'failed';
   video_url?: string;
   thumbnail_url?: string;
+  error_message?: string;
   detail?: {
+    status?: string;
+    video_url?: string;
     url?: string;
-    draft_info?: {
-      encodings?: {
-        source?: {
-          path?: string;
-        };
-      };
-    };
+    error_message?: string;
   };
   [key: string]: any;
 }
@@ -53,28 +47,27 @@ interface VideoQueryResponse {
 export async function createVideoTask(params: VideoCreateParams): Promise<VideoCreateResponse> {
   const {
     prompt,
-    images = [],
-    orientation = 'landscape',
-    size = 'large',
-    duration = 10,
-    watermark = false,
-    private: isPrivate = true
+    images,
+    aspect_ratio = '16:9',
+    enhance_prompt = true,
+    enable_upsample = true
   } = params;
 
-  const requestBody = {
-    images,
-    model: 'veo3.1-4k',
-    orientation,
+  const requestBody: any = {
+    model: 'veo3.1-fast',
     prompt,
-    size,
-    duration,
-    watermark,
-    private: isPrivate
+    aspect_ratio,
+    enhance_prompt,
+    enable_upsample
   };
 
-  console.log('📹 创建视频任务...');
+  if (images && images.length > 0) {
+    requestBody.images = images;
+  }
+
+  console.log('📹 创建视频任务 (veo3.1-fast)...');
   console.log('提示词:', prompt);
-  console.log('参数:', { orientation, size, duration });
+  console.log('参数:', { aspect_ratio, enhance_prompt, enable_upsample });
 
   try {
     const response = await fetch(`${JUXIN_BASE_URL}/v1/video/create`, {
@@ -90,7 +83,6 @@ export async function createVideoTask(params: VideoCreateParams): Promise<VideoC
     if (!response.ok) {
       const errorText = await response.text();
       
-      // 特殊处理上游负载饱和错误
       if (errorText.includes('当前分组上游负载已饱和')) {
         throw new Error('VIDEO_SERVICE_BUSY: 视频生成服务当前正忙，请稍后再试。');
       }
@@ -113,7 +105,7 @@ export async function createVideoTask(params: VideoCreateParams): Promise<VideoC
  */
 export async function queryVideoTask(taskId: string): Promise<VideoQueryResponse> {
   try {
-    const response = await fetch(`${JUXIN_BASE_URL}/v1/video/query?id=${taskId}`, {
+    const response = await fetch(`${JUXIN_BASE_URL}/v1/video/query?id=${encodeURIComponent(taskId)}`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -135,32 +127,16 @@ export async function queryVideoTask(taskId: string): Promise<VideoQueryResponse
 }
 
 /**
- * 从响应中提取视频 URL（多种可能的位置）
+ * 从响应中提取视频 URL
  */
 function extractVideoUrl(data: VideoQueryResponse): string | null {
-  // 优先级 1: data.video_url
-  if (data.video_url) {
-    return data.video_url;
-  }
-
-  // 优先级 2: data.detail.url
-  if (data.detail?.url) {
-    return data.detail.url;
-  }
-
-  // 优先级 3: data.detail.draft_info.encodings.source.path
-  if (data.detail?.draft_info?.encodings?.source?.path) {
-    return data.detail.draft_info.encodings.source.path;
-  }
+  if (data.video_url) return data.video_url;
+  
+  const detail = data.detail || data;
+  if ((detail as any).video_url) return (detail as any).video_url;
+  if ((detail as any).url) return (detail as any).url;
 
   return null;
-}
-
-/**
- * 从响应中提取缩略图 URL
- */
-function extractThumbnailUrl(data: VideoQueryResponse): string | null {
-  return data.thumbnail_url || null;
 }
 
 /**
@@ -179,13 +155,17 @@ export async function createAndWaitForVideo(
   thumbUrl?: string;
   error?: string;
 }> {
-  const { intervalMs = 2000, timeoutMs = 180000 } = options; // 默认 2s 轮询，3 分钟超时
+  const { intervalMs = 5000, timeoutMs = 300000 } = options; // 5s 轮询, 5 分钟超时
 
-  // 1. 创建任务
   const createResult = await createVideoTask(params);
   const taskId = createResult.id;
 
+  if (!taskId) {
+    throw new Error('No task id returned from API');
+  }
+
   console.log('⏳ 开始轮询任务状态...');
+  console.log(`任务 ID: ${taskId}`);
   console.log(`轮询间隔: ${intervalMs}ms, 超时时间: ${timeoutMs}ms`);
 
   const startTime = Date.now();
@@ -195,53 +175,41 @@ export async function createAndWaitForVideo(
     attemptCount++;
     const elapsed = Date.now() - startTime;
 
-    // 检查超时
     if (elapsed >= timeoutMs) {
       console.log('⏰ 超时！已等待', elapsed, 'ms');
-      return {
-        taskId,
-        status: 'timeout',
-        error: 'timeout'
-      };
+      return { taskId, status: 'timeout', error: 'timeout' };
     }
 
-    // 等待
     await new Promise(resolve => setTimeout(resolve, intervalMs));
 
-    // 查询状态
     try {
       const queryResult = await queryVideoTask(taskId);
-      console.log(`[${attemptCount}] 状态:`, queryResult.status, `(已等待 ${Math.round(elapsed / 1000)}s)`);
+      const detail = queryResult.detail || queryResult;
+      const status = (detail as any).status || queryResult.status;
+      
+      console.log(`[${attemptCount}] 状态: ${status} (已等待 ${Math.round(elapsed / 1000)}s)`);
 
-      if (queryResult.status === 'completed') {
+      if (status === 'completed') {
         const videoUrl = extractVideoUrl(queryResult);
-        const thumbUrl = extractThumbnailUrl(queryResult);
 
         console.log('🎉 视频生成完成！');
         console.log('视频 URL:', videoUrl);
-        console.log('缩略图 URL:', thumbUrl);
 
         return {
           taskId,
           status: 'completed',
           videoUrl: videoUrl || undefined,
-          thumbUrl: thumbUrl || undefined
+          thumbUrl: queryResult.thumbnail_url || undefined
         };
       }
 
-      if (queryResult.status === 'failed') {
-        console.log('❌ 任务失败');
-        return {
-          taskId,
-          status: 'failed',
-          error: 'Task failed'
-        };
+      if (status === 'failed') {
+        const errorMsg = (detail as any).error_message || queryResult.error_message || 'Task failed';
+        console.log('❌ 任务失败:', errorMsg);
+        return { taskId, status: 'failed', error: errorMsg };
       }
-
-      // 继续轮询（pending 状态）
     } catch (error) {
-      console.error('查询出错:', error);
-      // 继续尝试
+      console.error(`[${attemptCount}] 查询出错:`, error);
     }
   }
 }
@@ -257,13 +225,14 @@ export async function getVideoStatus(taskId: string): Promise<{
   raw?: any;
 }> {
   const data = await queryVideoTask(taskId);
+  const detail = data.detail || data;
+  const status = (detail as any).status || data.status;
 
   return {
     taskId,
-    status: data.status,
+    status,
     videoUrl: extractVideoUrl(data) || undefined,
-    thumbUrl: extractThumbnailUrl(data) || undefined,
+    thumbUrl: data.thumbnail_url || undefined,
     raw: data
   };
 }
-

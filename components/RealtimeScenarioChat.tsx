@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3001/api';
+
 interface RealtimeScenarioChatProps {
   appData: {
     type: 'realtime_scenario';
@@ -14,7 +16,6 @@ const RealtimeScenarioChat: React.FC<RealtimeScenarioChatProps> = ({ appData }) 
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [isWaitingResponse, setIsWaitingResponse] = useState(false);
 
-  // Initialize chat on mount
   useEffect(() => {
     startChat();
   }, []);
@@ -22,7 +23,7 @@ const RealtimeScenarioChat: React.FC<RealtimeScenarioChatProps> = ({ appData }) 
   const startChat = async () => {
     try {
       setIsWaitingResponse(true);
-      const response = await fetch('http://localhost:3001/api/scenario/start', {
+      const response = await fetch(`${API_BASE}/scenario/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ topic, setting: initial_setting })
@@ -51,7 +52,7 @@ const RealtimeScenarioChat: React.FC<RealtimeScenarioChatProps> = ({ appData }) 
     try {
       setIsWaitingResponse(true);
       
-      const response = await fetch('http://localhost:3001/api/scenario/continue', {
+      const response = await fetch(`${API_BASE}/scenario/continue`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -69,7 +70,6 @@ const RealtimeScenarioChat: React.FC<RealtimeScenarioChatProps> = ({ appData }) 
       
       const data = await response.json();
       
-      // Update last turn with user's choice
       const updatedHistory = [...chatHistory];
       updatedHistory[updatedHistory.length - 1] = {
         ...currentTurn,
@@ -77,7 +77,6 @@ const RealtimeScenarioChat: React.FC<RealtimeScenarioChatProps> = ({ appData }) 
         user_choice_index: optionIndex
       };
       
-      // Add new turn if not ending
       if (!data.is_conversation_ending) {
         updatedHistory.push(data);
       } else {
@@ -108,21 +107,18 @@ const RealtimeScenarioChat: React.FC<RealtimeScenarioChatProps> = ({ appData }) 
       <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
         {chatHistory.map((turn, idx) => (
           <div key={idx} className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            {/* Situation Context */}
             {turn.situation_context && (
               <div className="border-l-2 border-stone-300 pl-4 py-2">
                 <p className="text-xs text-stone-500 leading-relaxed">{turn.situation_context}</p>
               </div>
             )}
             
-            {/* NPC Message */}
             <div className="flex justify-start">
               <div className="max-w-[80%] bg-white border border-stone-200 rounded-xl p-4 shadow-sm">
                 <p className="text-sm text-stone-800 leading-relaxed">{turn.npc_says}</p>
               </div>
             </div>
             
-            {/* User's Choice (if made) */}
             {turn.user_choice && (
               <div className="flex justify-end animate-in slide-in-from-right-4 duration-300">
                 <div className="max-w-[80%] bg-stone-800 text-white rounded-xl p-4 shadow-sm">
@@ -131,7 +127,6 @@ const RealtimeScenarioChat: React.FC<RealtimeScenarioChatProps> = ({ appData }) 
               </div>
             )}
             
-            {/* Response Options (only for current turn) */}
             {!turn.user_choice && idx === chatHistory.length - 1 && turn.your_options && turn.your_options.length > 0 && (
               <div className="space-y-2">
                 <p className="text-[10px] uppercase tracking-widest text-stone-400 mb-3">Your Response</p>
@@ -156,7 +151,6 @@ const RealtimeScenarioChat: React.FC<RealtimeScenarioChatProps> = ({ appData }) 
               </div>
             )}
             
-            {/* Show if conversation ended */}
             {turn.is_ended && (
               <div className="border border-stone-300 bg-stone-50 p-4 rounded-lg text-center">
                 <p className="text-sm text-stone-700 font-serif italic">Conversation completed</p>
@@ -165,7 +159,6 @@ const RealtimeScenarioChat: React.FC<RealtimeScenarioChatProps> = ({ appData }) 
           </div>
         ))}
         
-        {/* Loading Indicator */}
         {isWaitingResponse && (
           <div className="flex items-center justify-center py-8 animate-in fade-in duration-300">
             <div className="animate-spin w-5 h-5 border-2 border-stone-300 border-t-stone-600 rounded-full mr-3"></div>
@@ -178,4 +171,3 @@ const RealtimeScenarioChat: React.FC<RealtimeScenarioChatProps> = ({ appData }) 
 };
 
 export default RealtimeScenarioChat;
-
