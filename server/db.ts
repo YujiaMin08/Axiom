@@ -81,12 +81,12 @@ export function initDatabase() {
 
 // Canvas CRUD
 export const canvasDB = {
-  create: (id: string, title: string, domain: string, user_id: string | null = null) => {
+  create: (id: string, title: string, domain: string) => {
     const stmt = db.prepare(`
-      INSERT INTO canvases (id, title, domain, status, created_at, user_id)
-      VALUES (?, ?, ?, 'active', ?, ?)
+      INSERT INTO canvases (id, title, domain, status, created_at)
+      VALUES (?, ?, ?, 'active', ?)
     `);
-    return stmt.run(id, title, domain, Date.now(), user_id);
+    return stmt.run(id, title, domain, Date.now());
   },
 
   findById: (id: string) => {

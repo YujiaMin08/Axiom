@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useUser, useClerk } from "@clerk/clerk-react";
 import { getAllCanvases, Canvas } from '../apiService';
 import SettingsModal from './SettingsModal';
 
@@ -16,14 +15,11 @@ const NotebookSidebar: React.FC<NotebookSidebarProps> = ({
   isOpen,
   onClose
 }) => {
-  const { user } = useUser();
-  const { signOut, openUserProfile } = useClerk();
   const [canvases, setCanvases] = useState<Canvas[]>([]);
   const [loading, setLoading] = useState(true);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
-  // Group canvases by domain
   const groupedCanvases = canvases.reduce((acc, canvas) => {
     const domain = canvas.domain || 'OTHER';
     if (!acc[domain]) acc[domain] = [];
@@ -37,7 +33,6 @@ const NotebookSidebar: React.FC<NotebookSidebarProps> = ({
     }
   }, [isOpen]);
 
-  // 关闭用户菜单当点击外部时
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (showUserMenu) {
@@ -55,7 +50,6 @@ const NotebookSidebar: React.FC<NotebookSidebarProps> = ({
     try {
       setLoading(true);
       const data = await getAllCanvases();
-      // Sort by created_at desc
       setCanvases(data.sort((a, b) => b.created_at - a.created_at));
     } catch (err) {
       console.error('Failed to load history:', err);
@@ -73,7 +67,6 @@ const NotebookSidebar: React.FC<NotebookSidebarProps> = ({
 
   return (
     <>
-      {/* Settings Modal */}
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
 
       {/* Backdrop */}
@@ -152,9 +145,8 @@ const NotebookSidebar: React.FC<NotebookSidebarProps> = ({
             )}
           </div>
 
-          {/* User Info & Settings */}
+          {/* Bottom: Settings */}
           <div className="border-t border-stone-100 bg-stone-50/50 relative">
-            {/* User Info Button */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -162,50 +154,21 @@ const NotebookSidebar: React.FC<NotebookSidebarProps> = ({
               }}
               className="w-full p-4 hover:bg-stone-100/50 transition-colors flex items-center space-x-3 group"
             >
-              {/* Avatar */}
-              {user?.imageUrl ? (
-                <img 
-                  src={user.imageUrl} 
-                  alt={user.fullName || "User"} 
-                  className="w-9 h-9 rounded-full object-cover border border-stone-200"
-                />
-              ) : (
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-stone-600 to-stone-400 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
-                  {user?.firstName?.[0] || user?.emailAddresses?.[0]?.emailAddress?.[0] || "U"}
-                </div>
-              )}
-              
-              {/* User Info */}
-              <div className="flex-1 text-left overflow-hidden">
-                <p className="text-sm font-medium text-stone-900 truncate">
-                  {user?.fullName || "User"}
-                </p>
-                <p className="text-[10px] text-stone-400 truncate">
-                  {user?.primaryEmailAddress?.emailAddress}
-                </p>
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-stone-600 to-stone-400 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                A
               </div>
-              {/* More Icon */}
+              
+              <div className="flex-1 text-left overflow-hidden">
+                <p className="text-sm font-medium text-stone-900 truncate">Axiom User</p>
+                <p className="text-[10px] text-stone-400 truncate">{canvases.length} manuscripts</p>
+              </div>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-stone-400 group-hover:text-stone-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
               </svg>
             </button>
 
-            {/* Popup Menu */}
             {showUserMenu && (
               <div className="absolute bottom-full left-4 right-4 mb-2 bg-white rounded-xl shadow-2xl border border-stone-200 py-2 z-[110] animate-in fade-in slide-in-from-bottom-2 duration-200">
-                <button 
-                  onClick={() => {
-                    openUserProfile();
-                    setShowUserMenu(false);
-                  }}
-                  className="w-full px-4 py-2.5 text-left text-sm text-stone-700 hover:bg-stone-50 transition-colors flex items-center space-x-3"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                  <span>Manage Account</span>
-                </button>
-
                 <button 
                   onClick={() => {
                     setShowSettings(true);
@@ -220,18 +183,6 @@ const NotebookSidebar: React.FC<NotebookSidebarProps> = ({
                   <span>App Settings</span>
                 </button>
                 
-                <div className="border-t border-stone-100 my-1"></div>
-
-                <button 
-                  onClick={() => signOut()}
-                  className="w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-stone-50 transition-colors flex items-center space-x-3"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
-                  <span>Sign Out</span>
-                </button>
-
                 <div className="border-t border-stone-100 my-1"></div>
 
                 <div className="px-4 py-2">
@@ -250,4 +201,3 @@ const NotebookSidebar: React.FC<NotebookSidebarProps> = ({
 };
 
 export default NotebookSidebar;
-
